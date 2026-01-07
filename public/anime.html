@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Anime - Elephime</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ================= VARIABLES ================= */
+        :root {
+            --primary: #ff4757;
+            --primary-dark: #e03a4b;
+            --bg-dark: #0f0f12;
+            --bg-card: #18181c;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --radius-md: 12px;
+            --nav-height: 70px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* ================= LAYOUT UTAMA ================= */
+        
+        /* Navbar (Konsisten) */
+        .navbar {
+            height: var(--nav-height); padding: 0 5%;
+            background: rgba(15, 15, 18, 0.9); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; gap: 10px; align-items: center; }
+        .back-btn { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+        .back-btn:hover { color: var(--text-main); }
+
+        /* Backdrop Blur Header */
+        .backdrop {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .backdrop-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: blur(20px) brightness(0.4);
+            transform: scale(1.1);
+        }
+        .backdrop-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, var(--bg-dark), transparent);
+        }
+
+        /* Container Detail */
+        .content-wrapper {
+            max-width: 1200px; margin: -150px auto 0; padding: 0 5% 50px;
+            position: relative; z-index: 10;
+        }
+
+        .anime-header {
+            display: grid; grid-template-columns: 240px 1fr; gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        /* Poster Image */
+        .poster-card {
+            border-radius: var(--radius-md); overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid var(--glass-border);
+            aspect-ratio: 2/3; background: #222;
+        }
+        .poster-img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Info Text */
+        .info-section h1 { font-size: 2.5rem; line-height: 1.2; margin-bottom: 15px; }
+        .meta-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .tag { 
+            background: var(--glass); padding: 5px 12px; border-radius: 6px; 
+            font-size: 0.85rem; border: 1px solid var(--glass-border); color: #ccc;
+        }
+        .tag.score { border-color: #f1c40f; color: #f1c40f; }
+
+        .action-buttons { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn {
+            padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: 0.3s; font-size: 0.95rem;
+        }
+        .btn-primary { background: var(--primary); color: white; border: none; box-shadow: 0 0 15px rgba(255, 71, 87, 0.3); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        
+        .btn-glass { background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--glass-border); }
+        .btn-glass:hover { background: rgba(255,255,255,0.2); }
+        .btn-glass.active { background: #2ecc71; border-color: #2ecc71; color: white; }
+
+        .synopsis {
+            font-size: 1rem; line-height: 1.7; color: #ccc;
+            background: var(--bg-card); padding: 20px; border-radius: var(--radius-md);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Episode List */
+        .ep-section { margin-top: 50px; }
+        .section-title { font-size: 1.5rem; margin-bottom: 25px; border-left: 4px solid var(--primary); padding-left: 15px; }
+        
+        .ep-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px;
+            max-height: 500px; overflow-y: auto; padding-right: 10px;
+        }
+
+        .ep-btn {
+            background: var(--bg-card); border: 1px solid var(--glass-border);
+            padding: 15px 10px; text-align: center; border-radius: 8px;
+            cursor: pointer; transition: 0.2s; color: var(--text-main);
+            font-weight: 500; font-size: 0.9rem;
+        }
+        .ep-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .ep-btn.watched { opacity: 0.6; background: #222; border-color: #333; }
+        .ep-btn.watched::after { content: ' ✓'; color: var(--primary); }
+
+        /* Comments */
+        .comments-section { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--glass-border); }
+
+        /* Loading */
+        #loader {
+            position: fixed; inset: 0; background: var(--bg-dark); z-index: 999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .anime-header { grid-template-columns: 1fr; gap: 20px; text-align: center; }
+            .poster-card { width: 180px; margin: 0 auto; }
+            .meta-tags, .action-buttons { justify-content: center; }
+            .content-wrapper { margin-top: -100px; }
+            .backdrop { height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <i class="fas fa-spinner fa-spin fa-2x" style="color:var(--primary); margin-bottom:15px;"></i>
+        <p>Memuat detail...</p>
+    </div>
+
+    <nav class="navbar">
+        <a href="/" class="logo"><i class="fas fa-shapes"></i> Elephime</a>
+        <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> Kembali</a>
+    </nav>
+
+    <div class="backdrop">
+        <img id="bg-image" src="" class="backdrop-img" alt="">
+        <div class="backdrop-overlay"></div>
+    </div>
+
+    <div class="content-wrapper">
+        <header class="anime-header">
+            <div class="poster-card">
+                <img id="poster-image" src="" class="poster-img" alt="Poster">
+            </div>
+            
+            <div class="info-section">
+                <h1 id="anime-title">Loading...</h1>
+                
+                <div class="meta-tags" id="meta-tags">
+                    </div>
+
+                <div class="action-buttons">
+                    <button id="bookmark-btn" class="btn btn-glass" onclick="toggleBookmark()">
+                        <i class="far fa-bookmark"></i> Bookmark
+                    </button>
+                    <button class="btn btn-glass" onclick="shareAnime()">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                </div>
+
+                <div class="synopsis">
+                    <h3 style="color:white; margin-bottom:10px;">Sinopsis</h3>
+                    <p id="anime-synopsis">...</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="ep-section">
+            <h2 class="section-title">Daftar Episode</h2>
+            <div id="ep-list" class="ep-grid">
+                </div>
+        </section>
+
+        <section class="comments-section">
+            <h2 class="section-title">Komentar</h2>
+            <div id="giscus-container">
+                <i style="color:#666;">Memuat komentar...</i>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Ambil URL Parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const animeUrl = urlParams.get('url');
+        
+        // State Global
+        let animeData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!animeUrl) {
+                alert('Anime tidak ditemukan!');
+                window.location.href = '/';
+                return;
+            }
+            fetchAnimeDetails();
+        });
+
+        async function fetchAnimeDetails() {
+            try {
+                const res = await fetch(`/API/anime-details?url=${encodeURIComponent(animeUrl)}`);
+                const json = await res.json();
+
+                if (json.status) {
+                    animeData = json.data;
+                    renderUI(json.data);
+                    checkBookmarkStatus();
+                    loadGiscus(); // Load komentar setelah data ada
+                } else {
+                    throw new Error(json.message);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('anime-title').innerText = "Gagal memuat data.";
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
+        function renderUI(data) {
+            // Gambar (Pakai Proxy)
+            const imgProxy = `/API/proxy-image?url=${encodeURIComponent(data.image)}`;
+            document.getElementById('bg-image').src = imgProxy;
+            document.getElementById('poster-image').src = imgProxy;
+
+            // Teks
+            document.getElementById('anime-title').innerText = data.title;
+            document.getElementById('anime-synopsis').innerText = data.synopsis || "Tidak ada sinopsis.";
+
+            // Meta Tags
+            const metaContainer = document.getElementById('meta-tags');
+            let metaHtml = `<span class="tag score"><i class="fas fa-star"></i> ${data.rating}</span>`;
+            
+            // Render Genres
+            if (data.genres && Array.isArray(data.genres)) {
+                data.genres.forEach(g => metaHtml += `<span class="tag">${g}</span>`);
+            }
+            
+            // Render Info tambahan (Status/Studio jika ada di properti objek)
+            if (data.status) metaHtml += `<span class="tag" style="background:var(--primary); color:white">${data.status}</span>`;
+            
+            metaContainer.innerHTML = metaHtml;
+
+            // Episodes
+            renderEpisodes(data.episodes);
+
+            // Update Page Title
+            document.title = `${data.title} - Elephime`;
+        }
+
+        function renderEpisodes(episodes) {
+            const container = document.getElementById('ep-list');
+            const watchedList = JSON.parse(localStorage.getItem('watchedEpisodes')) || [];
+
+            container.innerHTML = '';
+
+            if (!episodes || episodes.length === 0) {
+                container.innerHTML = '<p style="color:#666;">Belum ada episode.</p>';
+                return;
+            }
+
+            // Reverse agar Episode terbaru (biasanya paling atas di array) tetap di atas, 
+            // atau sesuaikan selera. Samehadaku biasanya urut descending.
+            episodes.forEach((ep, index) => {
+                const btn = document.createElement('div');
+                const isWatched = watchedList.includes(ep.url);
+                
+                btn.className = `ep-btn ${isWatched ? 'watched' : ''}`;
+                btn.innerText = ep.title.replace(animeData.title, '').trim() || `Ep ${index + 1}`;
+                
+                btn.onclick = () => {
+                    // Simpan history tontonan (URL episode)
+                    saveWatched(ep.url);
+                    
+                    // Simpan data episode terpilih untuk halaman watch
+                    localStorage.setItem('selectedEpisode', JSON.stringify({
+                        title: ep.title,
+                        url: ep.url,
+                        animeTitle: animeData.title,
+                        allEpisodes: episodes // Kirim list semua episode agar bisa Next/Prev di watch
+                    }));
+                    
+                    window.location.href = `/watch?url=${encodeURIComponent(ep.url)}`;
+                };
+
+                container.appendChild(btn);
+            });
+        }
+
+        // --- Fitur Bookmark ---
+        function checkBookmarkStatus() {
+            if (!animeData) return;
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            const isBookmarked = bookmarks.some(b => b.url === animeUrl);
+            const btn = document.getElementById('bookmark-btn');
+
+            if (isBookmarked) {
+                btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
+                btn.classList.add('active');
+            } else {
+                btn.innerHTML = '<i class="far fa-bookmark"></i> Bookmark';
+                btn.classList.remove('active');
+            }
+        }
+
+        function toggleBookmark() {
+            if (!animeData) return;
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            const index = bookmarks.findIndex(b => b.url === animeUrl);
+
+            if (index === -1) {
+                // Tambah
+                bookmarks.push({
+                    title: animeData.title,
+                    image: animeData.image,
+                    url: animeUrl,
+                    date: new Date().toISOString()
+                });
+            } else {
+                // Hapus
+                bookmarks.splice(index, 1);
+            }
+
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            checkBookmarkStatus();
+        }
+
+        // --- Fitur Share ---
+        function shareAnime() {
+            if (navigator.share) {
+                navigator.share({
+                    title: animeData.title,
+                    text: `Nonton ${animeData.title} di Elephime!`,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link disalin ke clipboard!');
+            }
+        }
+
+        // --- Helper History Watch ---
+        function saveWatched(epUrl) {
+            let watched = JSON.parse(localStorage.getItem('watchedEpisodes')) || [];
+            if (!watched.includes(epUrl)) {
+                watched.push(epUrl);
+                localStorage.setItem('watchedEpisodes', JSON.stringify(watched));
+            }
+            
+            // Simpan juga ke History global (untuk halaman depan)
+            let history = JSON.parse(localStorage.getItem('history')) || [];
+            // Hapus duplikat lama
+            history = history.filter(h => h.url !== animeUrl);
+            // Masukkan yang baru di paling atas
+            history.unshift({
+                title: animeData.title,
+                image: animeData.image,
+                url: animeUrl, // Link anime utama
+                watchUrl: `/watch?url=${encodeURIComponent(epUrl)}`, // Link resume
+                episode: 'Terakhir Dilihat',
+                timestamp: Date.now()
+            });
+            localStorage.setItem('history', JSON.stringify(history.slice(0, 50)));
+        }
+
+        // --- Giscus Comment System ---
+        function loadGiscus() {
+            const container = document.getElementById('giscus-container');
+            container.innerHTML = ''; // Clear loading text
+
+            const script = document.createElement('script');
+            script.src = "https://giscus.app/client.js";
+            
+            // CONFIGURATION: Ganti dengan Repo ID kamu dari config.json (Manual input di sini jika server tidak kirim)
+            // Karena kita single file, kamu bisa edit manual di sini atau fetch dari endpoint API/config jika ada.
+            // Di sini saya pasang placeholder, user harus edit sendiri jika belum punya repo.
+            script.setAttribute("data-repo", "username/repo-name"); // GANTI INI
+            script.setAttribute("data-repo-id", "R_kgD...");      // GANTI INI
+            script.setAttribute("data-category", "General");
+            script.setAttribute("data-category-id", "DIC_...");   // GANTI INI
+            
+            script.setAttribute("data-mapping", "specific");
+            script.setAttribute("data-term", animeUrl); // Komentar terikat ke URL anime ini
+            script.setAttribute("data-strict", "0");
+            script.setAttribute("data-reactions-enabled", "1");
+            script.setAttribute("data-emit-metadata", "0");
+            script.setAttribute("data-input-position", "top");
+            script.setAttribute("data-theme", "dark"); // Tema Gelap sesuai website
+            script.setAttribute("data-lang", "id");
+            script.setAttribute("crossorigin", "anonymous");
+            script.async = true;
+
+            container.appendChild(script);
+        }
+    </script>
+</body>
+</html>
