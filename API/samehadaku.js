@@ -53,7 +53,7 @@ const getTopTenWeek = async () => {
         title: cleanText($el.find(".judul").text()),
         url: $el.find("a.series").attr("href"),
         image: getImage(imgEl),
-        rating: cleanText($el.find(".rating").text()),
+        rating: cleanText($el.find(".rating").text()) || "?",
         rank: cleanText($el.find(".is-topten b").last().text())
       });
     });
@@ -126,11 +126,16 @@ const search = async (query = "", page = 1, options = {}) => {
       const $el = $(el);
       const imgEl = $el.find(".content-thumb img");
 
+      // FIX: Rating Logic untuk Search
+      let rating = cleanText($el.find(".score").text());
+      if (!rating) rating = cleanText($el.find(".content-thumb .score").text());
+      if (!rating) rating = "?";
+
       results.push({
         title: cleanText($el.find(".title h2").text()),
         url: $el.find("a").attr("href"),
         image: getImage(imgEl),
-        rating: cleanText($el.find(".score").text()),
+        rating: rating,
         type: cleanText($el.find(".content-thumb .type").text()),
         status: cleanText($el.find(".data .type").text()),
         synopsis: cleanText($el.find(".stooltip .ttls").text()),
@@ -155,25 +160,33 @@ const getAnime = async (url) => {
     
     info.title = cleanText($("h1.entry-title").text());
     info.image = getImage($(".thumb img")); 
-    info.rating = cleanText($(".rtg .skor").text());
+    
+    // FIX: Rating Logic untuk Halaman Detail
+    // Coba ambil dari beberapa kemungkinan selector
+    let rating = cleanText($(".rtg .skor").text()); // Prioritas 1
+    if (!rating) rating = cleanText($(".rating strong").text()); // Prioritas 2
+    if (!rating) rating = cleanText($("span[itemprop='ratingValue']").text()); // Prioritas 3
+    if (!rating) rating = "?";
+    
+    info.rating = rating;
+
     info.synopsis = cleanText($(".desc").text() || $(".entry-content").text());
     info.status = "Unknown"; // Default
 
-    // Logic baru untuk mengambil info detail (Status, dll)
     $(".spe span").each((_, el) => {
-      const text = $(el).text(); // Contoh: "Status: Ongoing"
+      const text = $(el).text();
       
-      // Deteksi Key
+      // Deteksi Status
       if (text.toLowerCase().includes("status")) {
          info.status = text.replace(/status/i, "").replace(":", "").trim();
       }
       
-      // Generic Key Value parsing
       const splitIndex = text.indexOf(":");
       if (splitIndex !== -1) {
         const keyRaw = cleanText(text.substring(0, splitIndex));
         const key = keyRaw.toLowerCase().replace(/\s+/g, '_');
         const value = cleanText(text.substring(splitIndex + 1));
+        
         if (key && value) {
            info[key] = value;
         }

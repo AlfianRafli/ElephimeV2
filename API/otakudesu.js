@@ -242,7 +242,7 @@ const getEpisodes = async (animeUrl) => {
       }
     });
 
-    return { title, episodes: episodes.reverse() };
+    return { title, episodes: episodes };
   } catch (error) {
     console.error('Get episodes error:', error.message);
     return { title: null, episodes: [] };
