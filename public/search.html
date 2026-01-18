@@ -2,25 +2,27 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Search - Elephime</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cari Anime - Elephime</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #ff4757;
+            --primary-dark: #e03a4b;
             --bg-dark: #0f0f12;
             --bg-card: #18181c;
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
             --glass-border: rgba(255, 255, 255, 0.1);
-            --radius-md: 12px;
+            --radius-md: 16px;
             --nav-height: 70px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Outfit', sans-serif; background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding-bottom: 80px; }
         a { text-decoration: none; color: inherit; }
+        button, input { font-family: inherit; border: none; outline: none; }
 
         /* Navbar Sederhana */
         .navbar {
@@ -29,86 +31,158 @@
             position: sticky; top: 0; z-index: 100; justify-content: space-between;
         }
         .logo { font-weight: 700; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .back-btn { font-size: 1.5rem; color: white; }
+        .back-btn { font-size: 1.2rem; color: white; width: 40px; height: 40px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:0.2s;}
+        .back-btn:active { background: rgba(255,255,255,0.1); }
 
-        /* Search & Filter Header */
+        /* PERBAIKAN: Padding Header dikurangi agar lebih luas */
         .search-header {
-            padding: 20px 5%;
-            background: linear-gradient(to bottom, #1a1a20, var(--bg-dark));
+            padding: 15px; /* Sebelumnya 20px 5% (terlalu lebar jaraknya) */
+            background: linear-gradient(to bottom, #141418, var(--bg-dark));
             border-bottom: 1px solid var(--glass-border);
         }
 
-        .search-box {
-            display: flex; gap: 10px; max-width: 800px; margin: 0 auto;
+        /* PERBAIKAN: Container dibuat 100% agar tidak aneh di tengah */
+        .search-container {
+            width: 100%;
+            max-width: 600px; 
+            margin: 0 auto;
         }
-        
-        .search-input {
-            flex: 1; padding: 12px 20px;
-            border-radius: 12px; border: 1px solid var(--glass-border);
-            background: rgba(0,0,0,0.3); color: white;
-            font-size: 1rem; outline: none; transition: 0.3s;
-        }
-        .search-input:focus { border-color: var(--primary); }
-        
-        .action-btn {
-            background: var(--bg-card); border: 1px solid var(--glass-border);
-            color: white; width: 45px; border-radius: 12px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; transition: 0.2s;
-        }
-        .action-btn.active { background: var(--primary); border-color: var(--primary); }
-        .search-btn-main { background: var(--primary); border-color: var(--primary); }
 
-        /* Filter Panel (Hidden by default) */
+        /* PERBAIKAN: Padding kiri input dikurangi */
+        .search-box-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 5px 5px 5px 15px; /* Padding kiri ubah dari 20px ke 15px biar agak ke kiri */
+            transition: 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        /* 1. SOURCE SWITCHER (PENGGANTI DROPDOWN) */
+        .source-switcher {
+            display: flex;
+            background: #222;
+            padding: 4px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .source-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            z-index: 2;
+            background: transparent;
+        }
+
+        .source-btn.active {
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Animasi Background Tab */
+        .tab-bg {
+            position: absolute;
+            top: 4px; left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: var(--primary);
+            border-radius: 40px;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+        }
+
+        .search-box-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.2);
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            color: white;
+            font-size: 1.1rem;
+            padding: 10px 0;
+        }
+        .search-input::placeholder { color: #555; }
+
+        .search-actions {
+            display: flex; gap: 5px;
+        }
+
+        .action-btn {
+            width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: #ccc;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .action-btn:active { transform: scale(0.95); }
+        .action-btn.filter-active { color: var(--primary); background: rgba(255, 71, 87, 0.1); }
+        
+        .search-trigger-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Filter Panel */
         #filterPanel {
-            max-width: 800px; margin: 20px auto 0;
-            background: var(--bg-card); border: 1px solid var(--glass-border);
+            max-width: 600px; margin: 15px auto 0;
+            background: #1a1a20; border: 1px solid var(--glass-border);
             border-radius: var(--radius-md); padding: 20px;
             display: none; animation: slideDown 0.3s ease;
         }
         #filterPanel.open { display: block; }
 
         .filter-group { margin-bottom: 20px; }
-        .filter-label { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
+        .filter-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
         
-        /* Radio & Checkbox Style */
         .options-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-        
-        .filter-option {
-            cursor: pointer; position: relative;
-        }
+        .filter-option { cursor: pointer; position: relative; }
         .filter-option input { position: absolute; opacity: 0; }
         .filter-chip {
-            display: block; padding: 6px 12px;
+            display: block; padding: 6px 14px;
             background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
             border-radius: 20px; font-size: 0.85rem; color: #ccc; transition: 0.2s;
         }
-        /* State Checked */
         .filter-option input:checked + .filter-chip {
-            background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 10px rgba(255, 71, 87, 0.4);
+            background: var(--primary); color: white; border-color: var(--primary);
         }
 
-        /* Genre Grid */
         .genre-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px;
             max-height: 200px; overflow-y: auto; padding-right: 5px;
         }
 
-        /* Results */
+        /* Results Grid */
         .container { padding: 30px 5%; max-width: 1400px; margin: 0 auto; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
 
         .card {
             background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden;
-            transition: 0.3s; position: relative; cursor: pointer; border: 1px solid transparent;
+            transition: 0.3s; cursor: pointer; border: 1px solid transparent; position: relative;
         }
-        .card:hover { transform: translateY(-5px); border-color: var(--glass-border); }
-        .card-img-wrapper { position: relative; padding-top: 140%; background: #222; }
+        .card:active { transform: scale(0.96); }
+        .card-img-wrapper { position: relative; padding-top: 145%; background: #222; }
         .card-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         .card-info { padding: 12px; }
-        .card-title { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-top: 5px; }
-        .score-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #f1c40f; padding: 3px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .card-title { font-size: 0.9rem; font-weight: 600; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 5px;}
+        .card-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .score-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #f1c40f; padding: 3px 6px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; backdrop-filter: blur(4px); }
 
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -126,105 +200,169 @@
     </nav>
 
     <div class="search-header">
-        <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="Cari anime..." autocomplete="off">
-            <button class="action-btn" onclick="toggleFilter()" id="filterToggleBtn"><i class="fas fa-sliders-h"></i></button>
-            <button class="action-btn search-btn-main" onclick="triggerSearch()"><i class="fas fa-search"></i></button>
-        </div>
-
-        <div id="filterPanel">
-            <div class="filter-group">
-                <span class="filter-label">Status</span>
-                <div class="options-grid">
-                    <label class="filter-option"><input type="radio" name="status" value="" checked><span class="filter-chip">All</span></label>
-                    <label class="filter-option"><input type="radio" name="status" value="Currently Airing"><span class="filter-chip">Ongoing</span></label>
-                    <label class="filter-option"><input type="radio" name="status" value="Finished Airing"><span class="filter-chip">Completed</span></label>
-                </div>
-            </div>
-
-            <div class="filter-group">
-                <span class="filter-label">Type</span>
-                <div class="options-grid">
-                    <label class="filter-option"><input type="radio" name="type" value="" checked><span class="filter-chip">All</span></label>
-                    <label class="filter-option"><input type="radio" name="type" value="TV"><span class="filter-chip">TV</span></label>
-                    <label class="filter-option"><input type="radio" name="type" value="Movie"><span class="filter-chip">Movie</span></label>
-                    <label class="filter-option"><input type="radio" name="type" value="OVA"><span class="filter-chip">OVA</span></label>
-                    <label class="filter-option"><input type="radio" name="type" value="ONA"><span class="filter-chip">ONA</span></label>
-                    <label class="filter-option"><input type="radio" name="type" value="Special"><span class="filter-chip">Special</span></label>
-                </div>
-            </div>
-
-            <div class="filter-group">
-                <span class="filter-label">Urutkan</span>
-                <div class="options-grid">
-                    <label class="filter-option"><input type="radio" name="order" value="latest" checked><span class="filter-chip">Update Terbaru</span></label>
-                    <label class="filter-option"><input type="radio" name="order" value="popular"><span class="filter-chip">Populer</span></label>
-                    <label class="filter-option"><input type="radio" name="order" value="title"><span class="filter-chip">A-Z</span></label>
-                </div>
-            </div>
-
-            <div class="filter-group">
-                <span class="filter-label">Genre (Bisa pilih banyak)</span>
-                <div class="genre-grid" id="genreList">
-                    </div>
-            </div>
+        <div class="search-container">
             
-            <button onclick="triggerSearch()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:600; margin-top:10px;">Terapkan Filter</button>
+            <div class="source-switcher">
+                <div class="tab-bg" id="tab-bg"></div>
+                <button class="source-btn active" onclick="setSource('samehadaku', 0)">
+                    Samehadaku
+                </button>
+                <button class="source-btn" onclick="setSource('otakudesu', 1)">
+                    Otakudesu
+                </button>
+            </div>
+
+            <div class="search-box-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="Mau nonton apa hari ini?" autocomplete="off">
+                
+                <div class="search-actions">
+                    <button class="action-btn" id="filterBtn" onclick="toggleFilter()">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                    <button class="action-btn search-trigger-btn" onclick="triggerSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="filterPanel">
+                <div class="filter-group" id="group-status">
+                    <span class="filter-label">Status</span>
+                    <div class="options-grid">
+                        <label class="filter-option"><input type="radio" name="status" value="" checked><span class="filter-chip">Semua</span></label>
+                        <label class="filter-option"><input type="radio" name="status" value="Currently Airing"><span class="filter-chip">Ongoing</span></label>
+                        <label class="filter-option"><input type="radio" name="status" value="Finished Airing"><span class="filter-chip">Tamat</span></label>
+                    </div>
+                </div>
+
+                <div class="filter-group" id="group-type">
+                    <span class="filter-label">Tipe</span>
+                    <div class="options-grid">
+                        <label class="filter-option"><input type="radio" name="type" value="" checked><span class="filter-chip">Semua</span></label>
+                        <label class="filter-option"><input type="radio" name="type" value="TV"><span class="filter-chip">TV</span></label>
+                        <label class="filter-option"><input type="radio" name="type" value="Movie"><span class="filter-chip">Movie</span></label>
+                    </div>
+                </div>
+
+                <div class="filter-group" id="group-order">
+                    <span class="filter-label">Urutkan</span>
+                    <div class="options-grid">
+                        <label class="filter-option"><input type="radio" name="order" value="latest" checked><span class="filter-chip">Terbaru</span></label>
+                        <label class="filter-option"><input type="radio" name="order" value="popular"><span class="filter-chip">Populer</span></label>
+                        <label class="filter-option"><input type="radio" name="order" value="title"><span class="filter-chip">A-Z</span></label>
+                    </div>
+                </div>
+
+                <div class="filter-group" id="group-genre">
+                    <span class="filter-label">Genre</span>
+                    <div class="genre-grid" id="genreList"></div>
+                </div>
+                
+                <button onclick="triggerSearch()" style="width:100%; padding:14px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:700; margin-top:10px;">Terapkan Filter</button>
+            </div>
         </div>
     </div>
 
     <div class="container">
-        <h3 id="resultTitle" style="margin-bottom:20px; color:var(--text-muted);">Hasil Pencarian</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 id="resultTitle" style="color:var(--text-muted);">Hasil Pencarian</h3>
+            <span id="sourceBadge" style="font-size:0.75rem; background:#333; padding:4px 10px; border-radius:6px;">Samehadaku</span>
+        </div>
         
         <div id="loader" style="text-align:center; display:none; padding:50px;">
-            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i>
         </div>
 
         <div id="animeGrid" class="grid"></div>
         
-        <div id="emptyState" style="text-align:center; padding:50px; display:none;">
-            <i class="fas fa-ghost fa-3x" style="color:#333; margin-bottom:15px;"></i>
-            <p>Tidak ada anime yang cocok dengan filter ini.</p>
+        <div id="emptyState" style="text-align:center; padding:80px 20px; display:none;">
+            <i class="fas fa-ghost fa-3x" style="color:#333; margin-bottom:20px;"></i>
+            <p style="color:#666;">Tidak ditemukan. Coba kata kunci lain.</p>
         </div>
     </div>
 
     <script>
+        // Data Genre
         const genres = [
             "Action", "Adventure", "Comedy", "Demons", "Drama", "Ecchi", "Fantasy", "Game", 
             "Harem", "Historical", "Horror", "Josei", "Magic", "Martial Arts", "Mecha", 
             "Military", "Music", "Mystery", "Parody", "Police", "Psychological", "Romance", 
-            "Samurai", "School", "Sci-Fi", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", 
-            "Shounen Ai", "Slice of Life", "Space", "Sports", "Super Power", "Supernatural", 
-            "Thriller", "Vampire"
+            "Samurai", "School", "Sci-Fi", "Seinen", "Shoujo", "Shounen", "Slice of Life", 
+            "Space", "Sports", "Super Power", "Supernatural", "Thriller", "Vampire", "Isekai"
         ];
+
+        // Global State
+        let currentSource = 'samehadaku';
 
         document.addEventListener('DOMContentLoaded', () => {
             renderGenres();
             
-            // Baca URL params untuk mengisi form filter kembali
+            // Event Listener: ENTER KEY untuk Search
+            document.getElementById('searchInput').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    triggerSearch();
+                    // Sembunyikan keyboard di mobile
+                    document.getElementById('searchInput').blur();
+                }
+            });
+
+            // Restore State from URL
             const params = new URLSearchParams(window.location.search);
+            
+            // Restore Source
+            if(params.has('source')) {
+                const src = params.get('source');
+                const idx = src === 'otakudesu' ? 1 : 0;
+                setSource(src, idx);
+            }
+
+            // Restore Input
             if(params.has('q')) document.getElementById('searchInput').value = params.get('q');
             
+            // Restore Filters
             if(params.has('status')) checkRadio('status', params.get('status'));
             if(params.has('type')) checkRadio('type', params.get('type'));
             if(params.has('order')) checkRadio('order', params.get('order'));
             
-            // Load Genre checkboxes
+            // Restore Genres
             const genreParams = params.getAll('genre[]');
             if(genreParams.length > 0) {
                 document.getElementById('filterPanel').classList.add('open');
-                document.getElementById('filterToggleBtn').classList.add('active');
+                document.getElementById('filterBtn').classList.add('filter-active');
                 genreParams.forEach(g => {
                     const cb = document.querySelector(`input[name="genre"][value="${g}"]`);
                     if(cb) cb.checked = true;
                 });
             }
 
-            // Auto search jika ada params
+            // Auto Search jika ada parameter
             if ([...params].length > 0) {
                 performSearch();
             }
         });
+
+        // UI Logic: Tab Switcher
+        function setSource(source, index) {
+            currentSource = source;
+            
+            // Update Tab UI
+            const btns = document.querySelectorAll('.source-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            btns[index].classList.add('active');
+
+            // Geser Background Tab
+            const bg = document.getElementById('tab-bg');
+            bg.style.transform = `translateX(${index * 100}%)`;
+
+            // Update Badge
+            document.getElementById('sourceBadge').innerText = source === 'otakudesu' ? 'Otakudesu' : 'Samehadaku';
+
+            // Filter visibility (Otakudesu minim filter)
+            const filters = ['group-status', 'group-type', 'group-order'];
+            filters.forEach(id => {
+                document.getElementById(id).style.display = source === 'otakudesu' ? 'none' : 'block';
+            });
+        }
 
         function renderGenres() {
             const container = document.getElementById('genreList');
@@ -240,8 +378,10 @@
         }
 
         function toggleFilter() {
-            document.getElementById('filterPanel').classList.toggle('open');
-            document.getElementById('filterToggleBtn').classList.toggle('active');
+            const panel = document.getElementById('filterPanel');
+            const btn = document.getElementById('filterBtn');
+            panel.classList.toggle('open');
+            btn.classList.toggle('filter-active');
         }
 
         function checkRadio(name, val) {
@@ -250,33 +390,37 @@
         }
 
         function triggerSearch() {
-            // Collect Data
-            const query = document.getElementById('searchInput').value;
+            const query = document.getElementById('searchInput').value.trim();
+            const checkedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(cb => cb.value);
+
+            // Validasi: Jangan search kalau kosong DAN tidak pilih genre
+            if (!query && checkedGenres.length === 0) {
+                return;
+            }
+
+            const url = new URL(window.location.href);
+            url.searchParams.set('source', currentSource);
+            url.searchParams.set('q', query);
+            
+            // Ambil filter hanya jika samehadaku
             const status = document.querySelector('input[name="status"]:checked').value;
             const type = document.querySelector('input[name="type"]:checked').value;
             const order = document.querySelector('input[name="order"]:checked').value;
             
-            const checkedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked'))
-                                       .map(cb => cb.value);
-
-            // Build URL
-            const url = new URL(window.location.href);
-            url.searchParams.set('q', query);
             url.searchParams.set('status', status);
             url.searchParams.set('type', type);
             url.searchParams.set('order', order);
             
-            url.searchParams.delete('genre[]'); // Reset genre lama
+            url.searchParams.delete('genre[]');
             checkedGenres.forEach(g => url.searchParams.append('genre[]', g));
 
-            // Update URL Browser (Tanpa reload) & Fetch
             window.history.pushState({}, '', url);
             performSearch();
             
-            // Auto close filter di mobile biar lega
+            // Tutup filter di mobile setelah search
             if(window.innerWidth < 768) {
                 document.getElementById('filterPanel').classList.remove('open');
-                document.getElementById('filterToggleBtn').classList.remove('active');
+                document.getElementById('filterBtn').classList.remove('filter-active');
             }
         }
 
@@ -285,38 +429,34 @@
             const loader = document.getElementById('loader');
             const empty = document.getElementById('emptyState');
             const title = document.getElementById('resultTitle');
+            
+            const params = new URLSearchParams(window.location.search);
+            const source = params.get('source') || 'samehadaku';
+            const query = params.get('q');
 
             grid.innerHTML = '';
             empty.style.display = 'none';
             loader.style.display = 'block';
 
-            // Ambil params langsung dari URL window yang sudah diupdate
-            const searchParams = new URLSearchParams(window.location.search);
-            
-            // Sesuaikan dengan API server.js (q -> title di samehadaku API tapi di server kita endpointnya /API/search?q=...)
-            // Tunggu, di server.js kita pakai ?q=... untuk query text.
-            // Tapi untuk filter advanced, samehadaku.js butuh parameter terpisah.
-            // Kita perlu sesuaikan URL fetch ke API internal kita.
-            
-            const apiParams = new URLSearchParams();
-            apiParams.append('q', searchParams.get('q') || ''); // Text query
-            
-            // Tambahkan parameter filter ke API call
-            // NOTE: server.js harus support meneruskan ini ke samehadaku.js
-            // Di kode server.js sebelumnya, endpoint /API/search hanya baca req.query.q
-            // KITA PERLU UPDATE SERVER.JS SEDIKIT agar membaca filter lainnya.
-            // Tapi untuk sekarang kita kirim saja, nanti saya beri update server.js di bawah.
-            
-            if(searchParams.get('status')) apiParams.append('status', searchParams.get('status'));
-            if(searchParams.get('type')) apiParams.append('type', searchParams.get('type'));
-            if(searchParams.get('order')) apiParams.append('order', searchParams.get('order'));
-            searchParams.getAll('genre[]').forEach(g => apiParams.append('genres[]', g));
+            // Judul Hasil
+            if (query) title.innerText = `Hasil: "${query}"`;
+            else title.innerText = "Hasil Filter";
 
-            title.innerText = searchParams.get('q') ? `Hasil: "${searchParams.get('q')}"` : "Hasil Filter";
+            // Construct API
+            const apiParams = new URLSearchParams();
+            apiParams.append('q', query || '');
+            params.getAll('genre[]').forEach(g => apiParams.append('genres[]', g));
+
+            let apiEndpoint = source === 'otakudesu' ? '/API/ODSearch' : '/API/search';
+
+            if (source === 'samehadaku') {
+                if(params.get('status')) apiParams.append('status', params.get('status'));
+                if(params.get('type')) apiParams.append('type', params.get('type'));
+                if(params.get('order')) apiParams.append('order', params.get('order'));
+            }
 
             try {
-                // Panggil API Internal
-                const res = await fetch(`/API/search?${apiParams.toString()}`);
+                const res = await fetch(`${apiEndpoint}?${apiParams.toString()}`);
                 const json = await res.json();
 
                 if (json.status && json.results.length > 0) {
@@ -335,19 +475,26 @@
         function renderCards(list) {
             const grid = document.getElementById('animeGrid');
             list.forEach(anime => {
-                const imgUrl = `/API/proxy-image?url=${encodeURIComponent(anime.image)}`;
+                // Proxy Image
+                let imgUrl = anime.image;
+                if (imgUrl && !imgUrl.includes('/API/proxy')) {
+                    imgUrl = `/API/proxy-image?url=${encodeURIComponent(imgUrl)}`;
+                }
+
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
                     <div class="card-img-wrapper">
                         <img src="${imgUrl}" class="card-img" loading="lazy">
-                        <div class="score-badge"><i class="fas fa-star"></i> ${anime.rating}</div>
+                        <div class="score-badge"><i class="fas fa-star"></i> ${anime.rating || '?'}</div>
                     </div>
                     <div class="card-info">
                         <h4 class="card-title">${anime.title}</h4>
                         <div class="card-meta">
-                            <span>${anime.type}</span>
-                            <span style="color:${anime.status.toLowerCase().includes('airing') ? '#2ecc71':'#a0a0a0'}">${anime.status}</span>
+                            <span>${anime.type || 'Anime'}</span>
+                            <span style="color:${(anime.status || '').toLowerCase().includes('airing') || (anime.status || '').toLowerCase().includes('ongoing') ? '#2ecc71':'#a0a0a0'}">
+                                ${anime.status || ''}
+                            </span>
                         </div>
                     </div>
                 `;

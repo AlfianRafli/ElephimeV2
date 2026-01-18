@@ -8,9 +8,10 @@ const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 const NodeCache = require("node-cache");
 
-// Import Config & Scraper
+// Import Config & Scrapers
 const config = require("./config.json");
 const samehadaku = require("./API/samehadaku");
+const otakudesu = require("./API/otakudesu");
 
 const app = express();
 const myCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache 10 Menit
@@ -19,18 +20,18 @@ const myCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache 10 Me
 // 1. SECURITY & PERFORMANCE MIDDLEWARE
 // ==========================================
 
-app.set("trust proxy", 1); // Wajib jika di deploy di belakang Nginx/Cloudflare
+app.set("trust proxy", 1); 
 
-// Helmet: Mengamankan HTTP Headers
+// Helmet: Security Headers (CSP disabled agar inline script/style jalan)
 app.use(helmet({
-    contentSecurityPolicy: false, // Diset false agar inline script/css (single file) tetap jalan
+    contentSecurityPolicy: false, 
     crossOriginEmbedderPolicy: false,
 }));
 
-// Compression: Mengompres response body (Gzip)
+// Compression: Gzip response
 app.use(compression());
 
-// CORS: Hanya izinkan domain sendiri (Ganti elephant.my.id saat produksi)
+// CORS
 app.use(cors({
     origin: config.domain || "*", 
     methods: ["GET", "POST"],
@@ -40,14 +41,11 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rate Limiter: Mencegah DDoS / Spam Request
+// Rate Limiter
 const apiLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 menit
-    max: 100, // Maksimal 100 request per IP per menit
-    message: {
-        status: 429,
-        error: "Too many requests, please slow down."
-    },
+    max: 300, 
+    message: { status: 429, error: "Too many requests, please slow down." },
     standardHeaders: true,
     legacyHeaders: false,
 });
@@ -57,7 +55,6 @@ app.use("/API", apiLimiter);
 // ==========================================
 // 2. CACHING STRATEGY
 // ==========================================
-// Middleware untuk cache response API agar tidak membebani server Samehadaku
 const cacheMiddleware = (req, res, next) => {
     if (req.method !== 'GET') return next();
     
@@ -69,7 +66,7 @@ const cacheMiddleware = (req, res, next) => {
     } else {
         res.sendResponse = res.json;
         res.json = (body) => {
-            // Jangan cache jika terjadi error
+            // Cache hanya jika sukses (status 200) dan ada body
             if (res.statusCode === 200 && body) {
                 myCache.set(key, body);
             }
@@ -80,49 +77,45 @@ const cacheMiddleware = (req, res, next) => {
 };
 
 // ==========================================
-// 3. STATIC FILES ROUTING
+// 3. STATIC FILES & PAGE ROUTING
 // ==========================================
 
-// Serve static files (assets, etc)
+// Serve static assets
 app.use(express.static(path.join(__dirname, "public")));
 
-// Route Halaman Utama (Home)
+// Route Pages (Sesuai Struktur ZIP)
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Route Halaman Anime Details
+app.get("/search", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "search.html"));
+});
+
 app.get("/anime", (req, res) => {
-    // Validasi sederhana: Jangan load jika tidak ada query URL (opsional, bisa dihandle frontend)
     res.sendFile(path.join(__dirname, "public", "anime.html"));
 });
 
-// Route Halaman Nonton (Watch)
 app.get("/watch", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "watch.html"));
 });
 
 // ==========================================
-// 4. API ENDPOINTS (Samehadaku Integration)
+// 4. API ENDPOINTS
 // ==========================================
 
-// A. Get Home Data (Latest + Top 10)
+// --- A. Home Data (Default: Samehadaku) ---
 app.get("/API/home", cacheMiddleware, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        
-        // Parallel request biar cepat (ambil list anime & top 10 berbarengan)
         const [latest, topTen] = await Promise.all([
             samehadaku.getAnimeList(page),
-            page === 1 ? samehadaku.getTopTenWeek() : Promise.resolve([]) // Top 10 cuma butuh di page 1
+            page === 1 ? samehadaku.getTopTenWeek() : Promise.resolve([]) 
         ]);
 
         res.json({
             status: true,
-            data: {
-                latest: latest,
-                topTen: topTen
-            }
+            data: { latest, topTen }
         });
     } catch (error) {
         console.error("Home API Error:", error.message);
@@ -130,16 +123,15 @@ app.get("/API/home", cacheMiddleware, async (req, res) => {
     }
 });
 
-// B. Search Anime
+// --- B. Search (Samehadaku) ---
 app.get("/API/search", async (req, res) => {
     try {
-        const query = req.query.q || ""; // Default kosong jika cuma filter
-        
+        const query = req.query.q || "";
         const options = {
             status: req.query.status || "",
             type: req.query.type || "",
             order: req.query.order || "title",
-            genres: req.query['genres[]'] || [] // Express baca array query sbg variable[]
+            genres: req.query['genres[]'] || []
         };
 
         if (options.genres && !Array.isArray(options.genres)) {
@@ -154,14 +146,47 @@ app.get("/API/search", async (req, res) => {
     }
 });
 
-// C. Get Anime Details
+// --- C. Otakudesu Search (Alternative Source) ---
+app.get("/API/ODSearch", async (req, res) => {
+    try {
+        const query = req.query.q || "";
+        const page = parseInt(req.query.page) || 1;
+        let genres = req.query['genres[]'] || req.query.genre || [];
+        
+        if (!Array.isArray(genres)) genres = [genres];
+
+        const result = await otakudesu.search(query, page, { genres });
+        
+        res.json({ status: true, source: "otakudesu", results: result });
+    } catch (error) {
+        console.error("ODSearch API Error:", error.message);
+        res.status(500).json({ status: false, message: "Otakudesu search failed" });
+    }
+});
+
+// --- D. Anime Details (Dynamic: Samehadaku OR Otakudesu) ---
 app.get("/API/anime-details", cacheMiddleware, async (req, res) => {
     try {
         const url = req.query.url;
-        if (!url) return res.status(400).json({ status: false, message: "URL parameter is required" });
+        if (!url) return res.status(400).json({ status: false, message: "URL required" });
 
-        const result = await samehadaku.getAnime(url);
-        if (!result) return res.status(404).json({ status: false, message: "Anime not found" });
+        let result = null;
+
+        if (url.includes("otakudesu")) {
+            const [animeInfo, episodesData] = await Promise.all([
+                otakudesu.getAnime(url),
+                otakudesu.getEpisodes(url)
+            ]);
+            if (animeInfo && Object.keys(animeInfo).length > 0) {
+                result = { ...animeInfo, episodes: episodesData.episodes || [], title: animeInfo.title || episodesData.title };
+            }
+        } else {
+            result = await samehadaku.getAnime(url);
+        }
+
+        if (!result || Object.keys(result).length === 0) {
+            return res.status(404).json({ status: false, message: "Data not found" });
+        }
 
         res.json({ status: true, data: result });
     } catch (error) {
@@ -170,14 +195,67 @@ app.get("/API/anime-details", cacheMiddleware, async (req, res) => {
     }
 });
 
-// D. Get Episode & Stream Links
+// --- E. Episode Streams (Dynamic: Samehadaku OR Otakudesu) ---
 app.get("/API/episode", cacheMiddleware, async (req, res) => {
     try {
         const url = req.query.url;
-        if (!url) return res.status(400).json({ status: false, message: "URL parameter is required" });
+        if (!url) return res.status(400).json({ status: false, message: "URL required" });
 
-        const result = await samehadaku.getEpisode(url);
-        if (!result) return res.status(404).json({ status: false, message: "Episode data not found" });
+        let result = null;
+	if (url.includes("otakudesu")) {
+            // Otakudesu Logic: Fetch Download & Stream Data
+            const [downloadData, streamData] = await Promise.all([
+                otakudesu.getDownloadLink(url),
+                otakudesu.getDataContent(url) // Ini sekarang return mirrors + keys (nonce/action)
+            ]);
+
+            const downloads = [];
+            if (downloadData.results) {
+                for (const [res, links] of Object.entries(downloadData.results)) {
+                    links.forEach(link => {
+                        downloads.push({
+                            format: "MKV/MP4", resolution: res, server: link.source, url: link.link
+                        });
+                    });
+                }
+            }
+
+            // Extract dynamic keys from scraping result
+            const dynamicKeys = {
+                action: streamData.action,
+                nonce: streamData.nonce
+            };
+
+            const streamPromises = [];
+            // Loop mirrors dan pass dynamicKeys ke getVideos
+            const resolutions = ["360p", "480p", "720p"];
+            for (const res of resolutions) {
+                if (streamData[res]) {
+                    streamData[res].forEach(mirror => {
+                        streamPromises.push(
+                            otakudesu.getVideos(mirror.dataContent, dynamicKeys)
+                                .then(videoRes => videoRes && videoRes.iframe ? { server: `${mirror.label} [${res}]`, iframe: videoRes.iframe } : null)
+                                .catch(() => null)
+                        );
+                    });
+                }
+            }
+
+            const resolvedStreams = await Promise.all(streamPromises);
+            
+            result = {
+                title: downloadData.title || "Episode Title",
+                release_date: "Unknown", 
+                prev_episode: null, next_episode: null, all_episodes_link: null,
+                downloads: downloads,
+                stream_servers: resolvedStreams.filter(s => s !== null)
+            }
+        } else {
+            // Samehadaku Logic
+            result = await samehadaku.getEpisode(url);
+        }
+
+        if (!result) return res.status(404).json({ status: false, message: "Episode not found" });
 
         res.json({ status: true, data: result });
     } catch (error) {
@@ -186,58 +264,38 @@ app.get("/API/episode", cacheMiddleware, async (req, res) => {
     }
 });
 
-// E. Image Proxy (Untuk menghindari Mixed Content / Hotlink protection)
+// --- F. Image Proxy ---
 app.get("/API/proxy-image", async (req, res) => {
     const imageUrl = req.query.url;
     if (!imageUrl) return res.status(400).send("URL required");
 
     try {
         const { gotScraping } = await import("got-scraping");
-        
-        // Mulai streaming request
         const stream = gotScraping.stream(imageUrl);
 
-        // --- BAGIAN PENTING: FILTER HEADER ---
         stream.on("response", (response) => {
-            // Hapus header HTTP/2 (pseudo-headers) agar tidak crash di Express
             delete response.headers[":status"];
             delete response.headers[":method"];
             delete response.headers[":path"];
             delete response.headers[":scheme"];
             delete response.headers[":authority"];
-
-            // Set Cache agar gambar tidak didownload ulang terus menerus
             res.setHeader("Cache-Control", "public, max-age=86400");
-            
-            // Set Content-Type yang benar dari sumber (misal image/jpeg)
-            if (response.headers["content-type"]) {
-                res.setHeader("Content-Type", response.headers["content-type"]);
-            }
+            if (response.headers["content-type"]) res.setHeader("Content-Type", response.headers["content-type"]);
         });
 
-        // Handle jika gambar gagal didownload (404/500 dari sumber)
         stream.on("error", (err) => {
-            console.error("Proxy Stream Error:", err.message);
-            // Pastikan header belum terkirim sebelum mengirim fallback
-            if (!res.headersSent) {
-                res.sendFile(path.join(__dirname, "public", "assets", "placeholder.png"));
-            }
+            if (!res.headersSent) res.sendFile(path.join(__dirname, "public", "assets", "placeholder.png"));
         });
 
-        // Salirkan data gambar ke respon express
         stream.pipe(res);
-
     } catch (error) {
-        console.error("Proxy Setup Error:", error.message);
-        if (!res.headersSent) {
-             res.sendFile(path.join(__dirname, "public", "assets", "placeholder.png"));
-        }
+        if (!res.headersSent) res.sendFile(path.join(__dirname, "public", "assets", "placeholder.png"));
     }
 });
 
-// Route Halaman Search
-app.get("/search", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "search.html"));
+// --- G. Settings ---
+app.get("/API/settings", (req, res) => {
+    res.json({ giscus: config.giscus });
 });
 
 // ==========================================
@@ -249,20 +307,4 @@ app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
 });
 
-if (config.https) {
-    try {
-        const options = {
-            key: fs.readFileSync(config.key),
-            cert: fs.readFileSync(config.cert)
-        };
-        https.createServer(options, app).listen(443, () => {
-            console.log("SECURE Server running on https://localhost:443");
-        });
-    } catch (e) {
-        console.error("SSL Configuration Failed:", e.message);
-    }
-} else {
-    app.listen(config.port || 3000, () =>
-        console.log(`Server running on http://localhost:${config.port || 3000}`)
-    );
-}
+app.listen(config.port || 3000, () => console.log(`Server running on http://localhost:${config.port || 3000}`));

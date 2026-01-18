@@ -1,623 +1,582 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-    <title>Elephime - Nonton Anime Sub Indo Gratis</title>
-    <meta name="title" content="Elephime - Nonton Anime Sub Indo Gratis & Mewah">
-    <meta name="description" content="Streaming anime subtitle Indonesia dengan tampilan modern, bersih, dan bebas iklan. Update episode terbaru setiap hari dengan server tercepat.">
-    <meta name="keywords" content="nonton anime, streaming anime, anime sub indo, samehadaku, otakudesu, anime gratis, elephime">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="Indonesian">
-    <meta name="author" content="Elephime">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://elephant.my.id/">
-    <meta property="og:title" content="Elephime - Streaming Anime Premium">
-    <meta property="og:description" content="Nonton anime favoritmu tanpa gangguan. Tampilan dark mode yang elegan, history tontonan otomatis, dan hemat kuota.">
-    <meta property="og:image" content="https://elephant.my.id/assets/favico.png">
-    <meta property="og:image:width" content="512">
-    <meta property="og:image:height" content="512">
-    <meta property="og:site_name" content="Elephime">
-
-    <meta property="twitter:card" content="summary">
-    <meta property="twitter:url" content="https://elephant.my.id/">
-    <meta property="twitter:title" content="Elephime - Anime Sub Indo">
-    <meta property="twitter:description" content="Nonton anime subtitle Indonesia dengan pengalaman terbaik. Gratis dan Update.">
-    <meta property="twitter:image" content="https://elephant.my.id/assets/favico.png">
-
-    <meta name="theme-color" content="#ff4757">
-    <meta name="msapplication-navbutton-color" content="#ff4757">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favico.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favico.png">
-    <link rel="apple-touch-icon" href="/assets/favico.png">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* ============================
-           1. CORE VARIABLES & RESET
-           ============================ */
-        :root {
-            --primary: #ff4757;
-            --primary-glow: rgba(255, 71, 87, 0.5);
-            --bg-dark: #0f0f12;
-            --bg-card: #18181c;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --radius-md: 12px;
-            --nav-height: 60px; /* Sedikit diperkecil agar pas di mobile */
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            overflow-x: hidden;
-            min-height: 100vh;
-            padding-bottom: 80px; /* Ruang untuk Navbar Bawah */
-        }
-
-        a { text-decoration: none; color: inherit; transition: 0.3s; }
-        ul { list-style: none; }
-        button { border: none; background: none; cursor: pointer; font-family: inherit; }
-
-        /* Scrollbar Mewah */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-        /* ============================
-           2. NAVBAR & NAVIGATION
-           ============================ */
-        
-        /* Navbar Atas (Hanya Logo) */
-        .navbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: var(--nav-height);
-            background: rgba(15, 15, 18, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            z-index: 1000;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            padding: 0 5%;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        /* Navigasi (Desktop: Di Atas, Mobile: Di Bawah) */
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            margin-left: auto; /* Desktop: Dorong ke kanan */
-        }
-
-        .nav-item {
-            font-weight: 500;
-            color: var(--text-muted);
-            position: relative;
-            padding: 5px 0;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .nav-item:hover, .nav-item.active { color: var(--text-main); }
-        
-        /* Indikator Active Desktop */
-        @media (min-width: 769px) {
-            .nav-item.active::after {
-                content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
-                height: 2px; background: var(--primary); box-shadow: 0 0 10px var(--primary);
-            }
-        }
-
-        /* --- MOBILE NAVIGATION (BOTTOM BAR) --- */
-        @media (max-width: 768px) {
-            .navbar {
-                justify-content: center; /* Logo di tengah saat mobile */
-            }
-
-            .nav-links {
-                position: fixed; bottom: 0; left: 0; right: 0;
-                background: #141418;
-                border-top: 1px solid var(--glass-border);
-                height: 70px; /* Tinggi navbar bawah */
-                margin: 0;
-                padding: 0 10px;
-                display: flex;
-                justify-content: space-between; /* Sebar item merata */
-                align-items: center;
-                z-index: 1000;
-                box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
-            }
-
-            .nav-item {
-                flex: 1; /* Tiap item lebar sama */
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                font-size: 0.7rem; /* Teks kecil */
-                gap: 4px;
-                height: 100%;
-                color: #888;
-            }
-
-            .nav-item i {
-                font-size: 1.3rem; /* Ikon besar */
-                margin-bottom: 2px;
-                transition: 0.3s;
-            }
-
-            /* Efek Active Mobile (Warna & Glow) */
-            .nav-item.active {
-                color: var(--primary);
-            }
-            .nav-item.active i {
-                transform: translateY(-2px);
-                filter: drop-shadow(0 0 5px rgba(255, 71, 87, 0.4));
-            }
-        }
-
-        /* ============================
-           3. HERO & SECTIONS
-           ============================ */
-        .hero {
-            height: 60vh; width: 100%; position: relative;
-            display: flex; align-items: center; overflow: hidden; margin-bottom: 40px;
-        }
-        .hero-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover; background-position: center;
-            filter: brightness(0.4); transition: transform 10s ease;
-        }
-        .hero-bg::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to top, var(--bg-dark), transparent 80%);
-        }
-        .hero-content {
-            position: relative; z-index: 2; padding: 0 5%; max-width: 800px;
-            animation: slideUp 1s ease-out;
-        }
-        .hero-title {
-            font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 15px;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .btn-play {
-            padding: 10px 25px; background: var(--primary); color: white;
-            font-weight: 600; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px;
-            transition: 0.3s; box-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .container { padding: 0 5%; margin-bottom: 40px; }
-        
-        .section-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-        }
-        .section-title {
-            font-size: 1.4rem; font-weight: 600; position: relative; padding-left: 12px;
-        }
-        .section-title::before {
-            content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 4px;
-            background: var(--primary); border-radius: 4px;
-        }
-
-        /* View Switcher Buttons */
-        .view-switcher {
-            display: flex; gap: 8px; background: var(--glass); padding: 4px; border-radius: 10px; border: 1px solid var(--glass-border);
-        }
-        .view-btn {
-            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-            border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: 0.2s;
-        }
-        .view-btn.active {
-            background: var(--bg-card); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        /* Top 10 Horizontal Scroll */
-        .top-scroll {
-            display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth;
-        }
-        .card-top {
-            min-width: 240px; height: 140px; border-radius: var(--radius-md);
-            position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--glass-border);
-        }
-        .card-top img { width: 100%; height: 100%; object-fit: cover; }
-        .card-top-overlay {
-            position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.9), transparent);
-            display: flex; align-items: center; padding: 15px;
-        }
-        .rank-number {
-            font-size: 3.5rem; font-weight: 900; color: transparent;
-            -webkit-text-stroke: 2px white; margin-right: 15px; font-style: italic;
-        }
-
-        /* Grid & List Styles */
-        .grid-latest {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden;
-            transition: 0.3s; border: 1px solid transparent; cursor: pointer; position: relative;
-        }
-        .card:hover { border-color: var(--glass-border); transform: translateY(-5px); }
-        
-        .card-img-wrapper { position: relative; padding-top: 140%; overflow: hidden; background: #222; }
-        .card-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        .ep-badge {
-            position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7);
-            padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: var(--primary);
-            backdrop-filter: blur(4px);
-        }
-        .card-info { padding: 12px; }
-        .card-title {
-            font-size: 0.95rem; font-weight: 600; margin-bottom: 6px;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-            line-height: 1.3;
-        }
-        .card-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; }
-
-        /* LIST VIEW MODE */
-        .grid-latest.view-list { display: flex; flex-direction: column; gap: 15px; }
-        .grid-latest.view-list .card { display: flex; flex-direction: row; height: 110px; align-items: center; padding-right: 15px; }
-        .grid-latest.view-list .card:hover { transform: translateX(5px); }
-        .grid-latest.view-list .card-img-wrapper { width: 85px; height: 100%; padding-top: 0; flex-shrink: 0; border-radius: 0; }
-        .grid-latest.view-list .card-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding-left: 15px; }
-        .grid-latest.view-list .card-title { font-size: 1rem; margin-bottom: 8px; -webkit-line-clamp: 2; }
-        .grid-latest.view-list .card-meta { font-size: 0.85rem; }
-        
-        /* Loader */
-        #loader {
-            position: fixed; inset: 0; background: var(--bg-dark); z-index: 2000;
-            display: flex; justify-content: center; align-items: center; flex-direction: column;
-        }
-
-        .tab-content { display: none; animation: fadeIn 0.4s; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        @media (max-width: 768px) {
-            .grid-latest { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-            .hero { height: 50vh; }
-            .hero-title { font-size: 2rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="loader">
-        <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary); margin-bottom:15px;"></i>
-        <p style="letter-spacing: 2px; font-size: 0.9rem;">MEMUAT ANIME...</p>
-    </div>
-
-    <nav class="navbar">
-        <a href="/" class="logo">
-            <i class="fas fa-shapes"></i> Elephime
-        </a>
-        
-        <ul class="nav-links">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>Elephime - Nonton Anime Sub Indo Gratis</title>
+      <meta name="title" content="Elephime - Nonton Anime Sub Indo Gratis & Mewah">
+      <meta name="description" content="Streaming anime subtitle Indonesia dengan tampilan modern, bersih, dan bebas iklan. Update episode terbaru setiap hari dengan server tercepat.">
+      <meta name="keywords" content="nonton anime, streaming anime, anime sub indo, samehadaku, otakudesu, anime gratis, elephime">
+      <meta name="robots" content="index, follow">
+      <meta name="language" content="Indonesian">
+      <meta name="author" content="Elephime">
+      <meta property="og:type" content="website">
+      <meta property="og:url" content="https://elephant.my.id/">
+      <meta property="og:title" content="Elephime - Streaming Anime Premium">
+      <meta property="og:description" content="Nonton anime favoritmu tanpa gangguan. Tampilan dark mode yang elegan, history tontonan otomatis, dan hemat kuota.">
+      <meta property="og:image" content="https://elephant.my.id/assets/favico.png">
+      <meta property="og:image:width" content="512">
+      <meta property="og:image:height" content="512">
+      <meta property="og:site_name" content="Elephime">
+      <meta property="twitter:card" content="summary">
+      <meta property="twitter:url" content="https://elephant.my.id/">
+      <meta property="twitter:title" content="Elephime - Anime Sub Indo">
+      <meta property="twitter:description" content="Nonton anime subtitle Indonesia dengan pengalaman terbaik. Gratis dan Update.">
+      <meta property="twitter:image" content="https://elephant.my.id/assets/favico.png">
+      <meta name="theme-color" content="#ff4757">
+      <meta name="msapplication-navbutton-color" content="#ff4757">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <link rel="icon" type="image/png" sizes="32x32" href="/assets/favico.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/assets/favico.png">
+      <link rel="apple-touch-icon" href="/assets/favico.png">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <style>
+         /* ============================
+         1. CORE VARIABLES & RESET
+         ============================ */
+         :root {
+         --primary: #ff4757;
+         --primary-glow: rgba(255, 71, 87, 0.5);
+         --bg-dark: #0f0f12;
+         --bg-card: #18181c;
+         --text-main: #ffffff;
+         --text-muted: #a0a0a0;
+         --glass: rgba(255, 255, 255, 0.05);
+         --glass-border: rgba(255, 255, 255, 0.1);
+         --radius-md: 12px;
+         --nav-height: 60px; /* Sedikit diperkecil agar pas di mobile */
+         }
+         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+         body {
+         font-family: 'Outfit', sans-serif;
+         background-color: var(--bg-dark);
+         color: var(--text-main);
+         overflow-x: hidden;
+         min-height: 100vh;
+         padding-bottom: 80px; /* Ruang untuk Navbar Bawah */
+         }
+         a { text-decoration: none; color: inherit; transition: 0.3s; }
+         ul { list-style: none; }
+         button { border: none; background: none; cursor: pointer; font-family: inherit; }
+         /* Scrollbar Mewah */
+         ::-webkit-scrollbar { width: 8px; }
+         ::-webkit-scrollbar-track { background: var(--bg-dark); }
+         ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+         /* ============================
+         2. NAVBAR & NAVIGATION
+         ============================ */
+         /* Navbar Atas (Hanya Logo) */
+         .navbar {
+         position: fixed;
+         top: 0; left: 0; right: 0;
+         height: var(--nav-height);
+         background: rgba(15, 15, 18, 0.95);
+         backdrop-filter: blur(20px);
+         -webkit-backdrop-filter: blur(20px);
+         z-index: 1000;
+         border-bottom: 1px solid var(--glass-border);
+         display: flex;
+         align-items: center;
+         padding: 0 5%;
+         }
+         .logo {
+         font-size: 1.5rem;
+         font-weight: 700;
+         color: var(--primary);
+         display: flex; align-items: center; gap: 10px;
+         }
+         /* Navigasi (Desktop: Di Atas, Mobile: Di Bawah) */
+         .nav-links {
+         display: flex;
+         gap: 30px;
+         margin-left: auto; /* Desktop: Dorong ke kanan */
+         }
+         .nav-item {
+         font-weight: 500;
+         color: var(--text-muted);
+         position: relative;
+         padding: 5px 0;
+         cursor: pointer;
+         transition: 0.3s;
+         }
+         .nav-item:hover, .nav-item.active { color: var(--text-main); }
+         /* Indikator Active Desktop */
+         @media (min-width: 769px) {
+         .nav-item.active::after {
+         content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
+         height: 2px; background: var(--primary); box-shadow: 0 0 10px var(--primary);
+         }
+         }
+         /* --- MOBILE NAVIGATION (BOTTOM BAR) --- */
+         @media (max-width: 768px) {
+         .navbar {
+         justify-content: center; /* Logo di tengah saat mobile */
+         }
+         .nav-links {
+         position: fixed; bottom: 0; left: 0; right: 0;
+         background: #141418;
+         border-top: 1px solid var(--glass-border);
+         height: 70px; /* Tinggi navbar bawah */
+         margin: 0;
+         padding: 0 10px;
+         display: flex;
+         justify-content: space-between; /* Sebar item merata */
+         align-items: center;
+         z-index: 1000;
+         box-shadow: 0 -10px 20px rgba(0,0,0,0.5);
+         }
+         .nav-item {
+         flex: 1; /* Tiap item lebar sama */
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         font-size: 0.7rem; /* Teks kecil */
+         gap: 4px;
+         height: 100%;
+         color: #888;
+         }
+         .nav-item i {
+         font-size: 1.3rem; /* Ikon besar */
+         margin-bottom: 2px;
+         transition: 0.3s;
+         }
+         /* Efek Active Mobile (Warna & Glow) */
+         .nav-item.active {
+         color: var(--primary);
+         }
+         .nav-item.active i {
+         transform: translateY(-2px);
+         filter: drop-shadow(0 0 5px rgba(255, 71, 87, 0.4));
+         }
+         }
+         /* ============================
+         3. HERO & SECTIONS
+         ============================ */
+         .hero {
+         height: 60vh; width: 100%; position: relative;
+         display: flex; align-items: center; overflow: hidden; margin-bottom: 40px;
+         }
+         .hero-bg {
+         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+         background-size: cover; background-position: center;
+         filter: brightness(0.4); transition: transform 10s ease;
+         }
+         .hero-bg::after {
+         content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+         background: linear-gradient(to top, var(--bg-dark), transparent 80%);
+         }
+         .hero-content {
+         position: relative; z-index: 2; padding: 0 5%; max-width: 800px;
+         animation: slideUp 1s ease-out;
+         }
+         .hero-title {
+         font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 15px;
+         text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+         }
+         .btn-play {
+         padding: 10px 25px; background: var(--primary); color: white;
+         font-weight: 600; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px;
+         transition: 0.3s; box-shadow: 0 0 20px var(--primary-glow);
+         }
+         .container { padding: 0 5%; margin-bottom: 40px; }
+         .section-header {
+         display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+         }
+         .section-title {
+         font-size: 1.4rem; font-weight: 600; position: relative; padding-left: 12px;
+         }
+         .section-title::before {
+         content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 4px;
+         background: var(--primary); border-radius: 4px;
+         }
+         /* View Switcher Buttons */
+         .view-switcher {
+         display: flex; gap: 8px; background: var(--glass); padding: 4px; border-radius: 10px; border: 1px solid var(--glass-border);
+         }
+         .view-btn {
+         width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+         border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: 0.2s;
+         }
+         .view-btn.active {
+         background: var(--bg-card); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+         }
+         /* Top 10 Horizontal Scroll */
+         .top-scroll {
+         display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth;
+         }
+         .card-top {
+         min-width: 240px; height: 140px; border-radius: var(--radius-md);
+         position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--glass-border);
+         }
+         .card-top img { width: 100%; height: 100%; object-fit: cover; }
+         .card-top-overlay {
+         position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.9), transparent);
+         display: flex; align-items: center; padding: 15px;
+         }
+         .rank-number {
+         font-size: 3.5rem; font-weight: 900; color: transparent;
+         -webkit-text-stroke: 2px white; margin-right: 15px; font-style: italic;
+         }
+         /* Grid & List Styles */
+         .grid-latest {
+         display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+         gap: 20px;
+         }
+         .card {
+         background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden;
+         transition: 0.3s; border: 1px solid transparent; cursor: pointer; position: relative;
+         }
+         .card:hover { border-color: var(--glass-border); transform: translateY(-5px); }
+         .card-img-wrapper { position: relative; padding-top: 140%; overflow: hidden; background: #222; }
+         .card-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+         .ep-badge {
+         position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7);
+         padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: var(--primary);
+         backdrop-filter: blur(4px);
+         }
+         .card-info { padding: 12px; }
+         .card-title {
+         font-size: 0.95rem; font-weight: 600; margin-bottom: 6px;
+         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+         line-height: 1.3;
+         }
+         .card-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+         /* LIST VIEW MODE */
+         .grid-latest.view-list { display: flex; flex-direction: column; gap: 15px; }
+         .grid-latest.view-list .card { display: flex; flex-direction: row; height: 110px; align-items: center; padding-right: 15px; }
+         .grid-latest.view-list .card:hover { transform: translateX(5px); }
+         .grid-latest.view-list .card-img-wrapper { width: 85px; height: 100%; padding-top: 0; flex-shrink: 0; border-radius: 0; }
+         .grid-latest.view-list .card-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding-left: 15px; }
+         .grid-latest.view-list .card-title { font-size: 1rem; margin-bottom: 8px; -webkit-line-clamp: 2; }
+         .grid-latest.view-list .card-meta { font-size: 0.85rem; }
+         /* Loader */
+         #loader {
+         position: fixed; inset: 0; background: var(--bg-dark); z-index: 2000;
+         display: flex; justify-content: center; align-items: center; flex-direction: column;
+         }
+         .tab-content { display: none; animation: fadeIn 0.4s; }
+         .tab-content.active { display: block; }
+         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+         @media (max-width: 768px) {
+         .grid-latest { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+         .hero { height: 50vh; }
+         .hero-title { font-size: 2rem; }
+         }
+      </style>
+   </head>
+   <body>
+      <div id="loader">
+         <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary); margin-bottom:15px;"></i>
+         <p style="letter-spacing: 2px; font-size: 0.9rem;">MEMUAT ANIME...</p>
+      </div>
+      <nav class="navbar">
+         <a href="/" class="logo">
+         <i class="fas fa-shapes"></i> Elephime
+         </a>
+         <ul class="nav-links">
             <li class="nav-item active" onclick="switchTab('home')">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
+               <i class="fas fa-home"></i>
+               <span>Home</span>
             </li>
-
             <li class="nav-item" onclick="location.href='/search'">
-                <i class="fas fa-search"></i>
-                <span>Search</span>
+               <i class="fas fa-search"></i>
+               <span>Search</span>
             </li>
-
             <li class="nav-item" onclick="switchTab('history')">
-                <i class="fas fa-history"></i>
-                <span>History</span>
+               <i class="fas fa-history"></i>
+               <span>History</span>
             </li>
-
             <li class="nav-item" onclick="switchTab('bookmark')">
-                <i class="fas fa-bookmark"></i>
-                <span>Saved</span>
+               <i class="fas fa-bookmark"></i>
+               <span>Saved</span>
             </li>
-        </ul>
-    </nav>
-
-    <div id="tab-home" class="tab-content active">
-        <header class="hero">
+         </ul>
+      </nav>
+      <div id="tab-home" class="tab-content active">
+         <header class="hero">
             <div class="hero-bg" id="hero-bg"></div>
             <div class="hero-content">
-                <span style="background:var(--primary); padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:700;">#1 POPULER</span>
-                <h1 class="hero-title" id="hero-title">Loading...</h1>
-                <div style="margin-bottom:20px; color:#ccc; font-size:0.9rem;" id="hero-meta">...</div>
-                <a href="#" id="hero-btn" class="btn-play"><i class="fas fa-play"></i> Mulai Nonton</a>
+               <span style="background:var(--primary); padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:700;">#1 POPULER</span>
+               <h1 class="hero-title" id="hero-title">Loading...</h1>
+               <div style="margin-bottom:20px; color:#ccc; font-size:0.9rem;" id="hero-meta">...</div>
+               <a href="#" id="hero-btn" class="btn-play"><i class="fas fa-play"></i> Mulai Nonton</a>
             </div>
-        </header>
-
-        <section class="container">
+         </header>
+         <section class="container">
             <div class="section-header">
-                <h2 class="section-title">Top 10 Minggu Ini</h2>
+               <h2 class="section-title">Top 10 Minggu Ini</h2>
             </div>
             <div class="top-scroll" id="top-ten-list">
-                </div>
-        </section>
-
-        <section class="container">
-            <div class="section-header">
-                <h2 class="section-title">Rilis Terbaru</h2>
-                
-                <div class="view-switcher">
-                    <button class="view-btn active" onclick="toggleView('grid')" title="Grid View">
-                        <i class="fas fa-th-large"></i>
-                    </button>
-                    <button class="view-btn" onclick="toggleView('list')" title="List View">
-                        <i class="fas fa-list"></i>
-                    </button>
-                </div>
             </div>
-
+         </section>
+         <section class="container">
+            <div class="section-header">
+               <h2 class="section-title">Rilis Terbaru</h2>
+               <div class="view-switcher">
+                  <button class="view-btn active" onclick="toggleView('grid')" title="Grid View">
+                  <i class="fas fa-th-large"></i>
+                  </button>
+                  <button class="view-btn" onclick="toggleView('list')" title="List View">
+                  <i class="fas fa-list"></i>
+                  </button>
+               </div>
+            </div>
             <div class="grid-latest" id="latest-list">
-                </div>
-            
-            <div style="text-align:center; margin-top:30px;">
-                <button onclick="loadPage(currentPage + 1)" class="btn-play" style="font-size:0.9rem; padding:10px 30px;">
-                    Load More <i class="fas fa-chevron-down"></i>
-                </button>
             </div>
-        </section>
-    </div>
-
-    <div id="tab-history" class="tab-content">
-        <div class="container" style="padding-top: 100px;">
+            <div style="text-align:center; margin-top:30px;">
+               <button onclick="loadPage(currentPage + 1)" class="btn-play" style="font-size:0.9rem; padding:10px 30px;">
+               Load More <i class="fas fa-chevron-down"></i>
+               </button>
+            </div>
+         </section>
+      </div>
+      <div id="tab-history" class="tab-content">
+         <div class="container" style="padding-top: 100px;">
             <div class="section-header">
-                <h2 class="section-title">Riwayat Menonton</h2>
-                <button onclick="clearHistory()" style="color:var(--primary); font-size:0.9rem;"><i class="fas fa-trash"></i> Hapus</button>
+               <h2 class="section-title">Riwayat Menonton</h2>
+               <button onclick="clearHistory()" style="color:var(--primary); font-size:0.9rem;"><i class="fas fa-trash"></i> Hapus</button>
             </div>
             <div class="grid-latest" id="history-list"></div>
             <div id="history-empty" style="text-align:center; padding:50px; display:none; color:#666;">
-                <i class="fas fa-history" style="font-size:3rem; margin-bottom:15px;"></i><p>Belum ada riwayat.</p>
+               <i class="fas fa-history" style="font-size:3rem; margin-bottom:15px;"></i>
+               <p>Belum ada riwayat.</p>
             </div>
-        </div>
-    </div>
-
-    <div id="tab-bookmark" class="tab-content">
-        <div class="container" style="padding-top: 100px;">
+         </div>
+      </div>
+      <div id="tab-bookmark" class="tab-content">
+         <div class="container" style="padding-top: 100px;">
             <div class="section-header">
-                <h2 class="section-title">Disimpan</h2>
+               <h2 class="section-title">Disimpan</h2>
             </div>
             <div class="grid-latest" id="bookmark-list"></div>
             <div id="bookmark-empty" style="text-align:center; padding:50px; display:none; color:#666;">
-                <i class="fas fa-bookmark" style="font-size:3rem; margin-bottom:15px;"></i><p>Belum ada bookmark.</p>
+               <i class="fas fa-bookmark" style="font-size:3rem; margin-bottom:15px;"></i>
+               <p>Belum ada bookmark.</p>
             </div>
-        </div>
-    </div>
-
-    <script>
-        let currentPage = 1;
-        let currentView = localStorage.getItem('viewMode') || 'grid';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchHomeData();
-            applyViewMode(currentView);
-            renderLocalStorageList('history');
-            renderLocalStorageList('bookmark');
-        });
-
-        // --- VIEW MODE LOGIC ---
-        function toggleView(mode) {
-            currentView = mode;
-            localStorage.setItem('viewMode', mode);
-            applyViewMode(mode);
-        }
-
-        function applyViewMode(mode) {
-            const grids = document.querySelectorAll('.grid-latest');
-            const btns = document.querySelectorAll('.view-btn');
-
-            grids.forEach(grid => {
-                if (mode === 'list') grid.classList.add('view-list');
-                else grid.classList.remove('view-list');
-            });
-
-            btns.forEach(btn => {
-                const icon = btn.querySelector('i');
-                if (mode === 'grid' && icon.classList.contains('fa-th-large')) btn.classList.add('active');
-                else if (mode === 'list' && icon.classList.contains('fa-list')) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-        }
-
-        // --- DATA FETCHING ---
-        async function fetchHomeData() {
-            try {
-                const res = await fetch(`/API/home?page=${currentPage}`);
-                const json = await res.json();
-                
-                if (json.status) {
-                    const { latest, topTen } = json.data;
-                    if (currentPage === 1) {
-                        renderHero(topTen[0]);
-                        renderTopTen(topTen);
-                    }
-                    renderLatest(latest, currentPage > 1);
-                }
-            } catch (err) {
-                console.error(err);
-            } finally {
-                document.getElementById('loader').style.display = 'none';
-            }
-        }
-
-        async function loadPage(page) {
-            currentPage = page;
-            const btn = document.querySelector('button[onclick*="loadPage"]');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-            await fetchHomeData();
-            btn.innerHTML = 'Load More <i class="fas fa-chevron-down"></i>';
-        }
-
-        // --- RENDER FUNCTIONS ---
-        function renderHero(anime) {
-            if(!anime) return;
-            document.getElementById('hero-bg').style.backgroundImage = `url('/API/proxy-image?url=${encodeURIComponent(anime.image)}')`;
-            document.getElementById('hero-title').innerText = anime.title;
-            document.getElementById('hero-meta').innerText = `Rank #1 • ${anime.rating}`;
-            document.getElementById('hero-btn').onclick = () => {
-                 localStorage.setItem('selectedAnime', JSON.stringify(anime));
-                 window.location.href = `/anime?url=${encodeURIComponent(anime.url)}`;
-            };
-        }
-
-        function renderTopTen(list) {
-            const container = document.getElementById('top-ten-list');
-            container.innerHTML = '';
-            list.forEach((anime, idx) => {
-                const div = document.createElement('div');
-                div.className = 'card-top';
-                div.innerHTML = `
-                    <img src="/API/proxy-image?url=${encodeURIComponent(anime.image)}" loading="lazy">
-                    <div class="card-top-overlay">
-                        <span class="rank-number">${idx + 1}</span>
-                        <div style="flex:1">
-                            <h4 style="font-size:0.9rem; line-height:1.2; margin-bottom:4px;">${anime.title}</h4>
-                            <span style="font-size:0.75rem; color:var(--primary)"><i class="fas fa-star"></i> ${anime.rating}</span>
-                        </div>
-                    </div>
-                `;
-                div.onclick = () => {
-                     localStorage.setItem('selectedAnime', JSON.stringify(anime));
-                     window.location.href = `/anime?url=${encodeURIComponent(anime.url)}`;
-                };
-                container.appendChild(div);
-            });
-        }
-
-        function renderLatest(list, append) {
-            const container = document.getElementById('latest-list');
-            if(!append) container.innerHTML = '';
-            
-            list.forEach(anime => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="card-img-wrapper">
-                        <img src="/API/proxy-image?url=${encodeURIComponent(anime.image)}" class="card-img" loading="lazy">
-                        <div class="ep-badge">${anime.episode}</div>
-                    </div>
-                    <div class="card-info">
-                        <h3 class="card-title">${anime.title}</h3>
-                        <div class="card-meta">
-                            <span>${anime.postedBy || 'Admin'}</span>
-                            <span>${anime.released || 'Baru'}</span>
-                        </div>
-                    </div>
-                `;
-                card.onclick = () => {
-                    if(anime.url.includes('episode')) {
-                         window.location.href = `/watch?url=${encodeURIComponent(anime.url)}`;
-                    } else {
-                         localStorage.setItem('selectedAnime', JSON.stringify(anime));
-                         window.location.href = `/anime?url=${encodeURIComponent(anime.url)}`;
-                    }
-                };
-                container.appendChild(card);
-            });
-        }
-
-        // --- LOCAL STORAGE LIST ---
-        function renderLocalStorageList(type) {
-            const key = type === 'history' ? 'history' : 'bookmarks';
-            const list = JSON.parse(localStorage.getItem(key)) || [];
-            const container = document.getElementById(`${type}-list`);
-            const empty = document.getElementById(`${type}-empty`);
-            
-            container.innerHTML = '';
-            if(list.length === 0) {
-                empty.style.display = 'block';
-                return;
-            } else {
-                empty.style.display = 'none';
-            }
-
-            list.forEach(item => {
-                const img = item.image || item.img;
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="card-img-wrapper">
-                        <img src="/API/proxy-image?url=${encodeURIComponent(img)}" class="card-img" loading="lazy">
-                        ${type==='history' ? `<div class="ep-badge">Ep ${item.episode||'?'}</div>` : ''}
-                    </div>
-                    <div class="card-info">
-                        <h3 class="card-title">${item.title}</h3>
-                        <div class="card-meta">
-                            <button onclick="removeItem(event, '${type}', '${item.url}')" style="color:#ff4757"><i class="fas fa-trash"></i> Hapus</button>
-                        </div>
-                    </div>
-                `;
-                card.onclick = (e) => {
-                    if(e.target.closest('button')) return;
-                    if(type==='history') window.location.href = item.watchUrl;
-                    else {
-                        localStorage.setItem('selectedAnime', JSON.stringify(item));
-                        window.location.href = `/anime?url=${encodeURIComponent(item.url)}`;
-                    }
-                };
-                container.appendChild(card);
-            });
-        }
-
-        function removeItem(e, type, url) {
-            e.stopPropagation();
-            if(!confirm('Hapus item ini?')) return;
-            const key = type==='history'?'history':'bookmarks';
-            let list = JSON.parse(localStorage.getItem(key))||[];
-            list = list.filter(i => i.url !== url);
-            localStorage.setItem(key, JSON.stringify(list));
-            renderLocalStorageList(type);
-        }
-
-        function clearHistory() {
-            if(confirm('Hapus semua history?')) {
-                localStorage.removeItem('history');
-                renderLocalStorageList('history');
-            }
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            
-            // Logic Active State Navbar
-            // Sekarang index berubah karena ada Search
-            const items = document.querySelectorAll('.nav-item');
-            if(tab === 'home') items[0].classList.add('active'); // Index 0: Home
-            if(tab === 'history') { items[3].classList.add('active'); renderLocalStorageList('history'); } // Index 3: History
-            if(tab === 'bookmark') { items[4].classList.add('active'); renderLocalStorageList('bookmark'); } // Index 4: Bookmark
-            
-            window.scrollTo(0,0);
-        }
-    </script>
-</body>
+         </div>
+      </div>
+      <script>
+         let currentPage = 1;
+         let currentView = localStorage.getItem('viewMode') || 'grid';
+         
+         document.addEventListener('DOMContentLoaded', () => {
+             fetchHomeData();
+             applyViewMode(currentView);
+             renderLocalStorageList('history');
+             renderLocalStorageList('bookmark');
+         });
+         
+         // --- VIEW MODE LOGIC ---
+         function toggleView(mode) {
+             currentView = mode;
+             localStorage.setItem('viewMode', mode);
+             applyViewMode(mode);
+         }
+         
+         function applyViewMode(mode) {
+             const grids = document.querySelectorAll('.grid-latest');
+             const btns = document.querySelectorAll('.view-btn');
+         
+             grids.forEach(grid => {
+                 if (mode === 'list') grid.classList.add('view-list');
+                 else grid.classList.remove('view-list');
+             });
+         
+             btns.forEach(btn => {
+                 const icon = btn.querySelector('i');
+                 if (mode === 'grid' && icon.classList.contains('fa-th-large')) btn.classList.add('active');
+                 else if (mode === 'list' && icon.classList.contains('fa-list')) btn.classList.add('active');
+                 else btn.classList.remove('active');
+             });
+         }
+         
+         // --- DATA FETCHING ---
+         async function fetchHomeData() {
+             try {
+                 const res = await fetch(`/API/home?page=${currentPage}`);
+                 const json = await res.json();
+                 
+                 if (json.status) {
+                     const { latest, topTen } = json.data;
+                     if (currentPage === 1) {
+                         renderHero(topTen[0]);
+                         renderTopTen(topTen);
+                     }
+                     renderLatest(latest, currentPage > 1);
+                 }
+             } catch (err) {
+                 console.error(err);
+             } finally {
+                 document.getElementById('loader').style.display = 'none';
+             }
+         }
+         
+         async function loadPage(page) {
+             currentPage = page;
+             const btn = document.querySelector('button[onclick*="loadPage"]');
+             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+             await fetchHomeData();
+             btn.innerHTML = 'Load More <i class="fas fa-chevron-down"></i>';
+         }
+         
+         // --- RENDER FUNCTIONS ---
+         function renderHero(anime) {
+             if(!anime) return;
+             document.getElementById('hero-bg').style.backgroundImage = `url('/API/proxy-image?url=${encodeURIComponent(anime.image)}')`;
+             document.getElementById('hero-title').innerText = anime.title;
+             document.getElementById('hero-meta').innerText = `Rank #1 • ${anime.rating}`;
+             document.getElementById('hero-btn').onclick = () => {
+                  localStorage.setItem('selectedAnime', JSON.stringify(anime));
+                  window.location.href = `/anime?url=${encodeURIComponent(anime.url)}`;
+             };
+         }
+         
+         function renderTopTen(list) {
+             const container = document.getElementById('top-ten-list');
+             container.innerHTML = '';
+             list.forEach((anime, idx) => {
+                 const div = document.createElement('div');
+                 div.className = 'card-top';
+                 div.innerHTML = `
+                     <img src="/API/proxy-image?url=${encodeURIComponent(anime.image)}" loading="lazy">
+                     <div class="card-top-overlay">
+                         <span class="rank-number">${idx + 1}</span>
+                         <div style="flex:1">
+                             <h4 style="font-size:0.9rem; line-height:1.2; margin-bottom:4px;">${anime.title}</h4>
+                             <span style="font-size:0.75rem; color:var(--primary)"><i class="fas fa-star"></i> ${anime.rating}</span>
+                         </div>
+                     </div>
+                 `;
+                 div.onclick = () => {
+                      localStorage.setItem('selectedAnime', JSON.stringify(anime));
+                      window.location.href = `/anime?url=${encodeURIComponent(anime.url)}`;
+                 };
+                 container.appendChild(div);
+             });
+         }
+         
+         function renderLatest(list, append) {
+             const container = document.getElementById('latest-list');
+             if(!append) container.innerHTML = '';
+             
+             list.forEach(anime => {
+                 const card = document.createElement('div');
+                 card.className = 'card';
+                 card.innerHTML = `
+                     <div class="card-img-wrapper">
+                         <img src="/API/proxy-image?url=${encodeURIComponent(anime.image)}" class="card-img" loading="lazy">
+                         <div class="ep-badge">${anime.episode}</div>
+                     </div>
+                     <div class="card-info">
+                         <h3 class="card-title">${anime.title}</h3>
+                         <div class="card-meta">
+                             <span>${anime.postedBy || 'Admin'}</span>
+                             <span>${anime.released || 'Baru'}</span>
+                         </div>
+                     </div>
+                 `;
+                 card.onclick = () => {
+                     if(anime.url.includes('episode')) {
+                          window.location.href = `/watch?url=${encodeURIComponent(anime.url)}`;
+                     } else {
+                          localStorage.setItem('selectedAnime', JSON.stringify(anime));
+                          window.location.href = `/anime?url=${encodeURIComponent(anime.url)}`;
+                     }
+                 };
+                 container.appendChild(card);
+             });
+         }
+         
+         // --- LOCAL STORAGE LIST ---
+         
+         function renderLocalStorageList(type) {
+         const key = type === 'history' ? 'history' : 'bookmarks';
+         const list = JSON.parse(localStorage.getItem(key)) || [];
+         const container = document.getElementById(`${type}-list`);
+         const empty = document.getElementById(`${type}-empty`);
+         
+         container.innerHTML = '';
+         if(list.length === 0) {
+         empty.style.display = 'block';
+         return;
+         } else {
+         empty.style.display = 'none';
+         }
+         
+         list.forEach(item => {
+         const img = item.image || item.img;
+         const badgeHtml = type === 'history' 
+             ? `<div class="ep-badge">${item.episode.toString().toLowerCase().includes('ep') ? item.episode : 'Ep ' + item.episode}</div>` 
+             : '';
+         
+         const card = document.createElement('div');
+         card.className = 'card';
+         card.innerHTML = `
+             <div class="card-img-wrapper">
+                 <img src="/API/proxy-image?url=${encodeURIComponent(img)}" class="card-img" loading="lazy">
+                 ${badgeHtml}
+             </div>
+             <div class="card-info">
+                 <h3 class="card-title">${item.title}</h3>
+                 <div class="card-meta">
+                     <button onclick="removeItem(event, '${type}', '${item.url}')" style="color:#ff4757"><i class="fas fa-trash"></i> Hapus</button>
+                 </div>
+             </div>
+         `;
+         
+         // PERBAIKAN BUG NAVIGASI DISINI
+         card.onclick = (e) => {
+             if(e.target.closest('button')) return;
+             
+             // Baik History maupun Bookmark sekarang diarahkan ke Detail Anime
+             localStorage.setItem('selectedAnime', JSON.stringify(item));
+             window.location.href = `/anime?url=${encodeURIComponent(item.url)}`;
+         };
+         container.appendChild(card);
+         });
+         }
+         
+         function removeItem(e, type, url) {
+             e.stopPropagation();
+             if(!confirm('Hapus item ini?')) return;
+             const key = type==='history'?'history':'bookmarks';
+             let list = JSON.parse(localStorage.getItem(key))||[];
+             list = list.filter(i => i.url !== url);
+             localStorage.setItem(key, JSON.stringify(list));
+             renderLocalStorageList(type);
+         }
+         
+         function clearHistory() {
+             if(confirm('Hapus semua history?')) {
+                 localStorage.removeItem('history');
+                 renderLocalStorageList('history');
+             }
+         }
+         
+         function switchTab(tab) {
+             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+             
+             document.getElementById(`tab-${tab}`).classList.add('active');
+             
+             // Logic Active State Navbar
+             // Sekarang index berubah karena ada Search
+             const items = document.querySelectorAll('.nav-item');
+             if(tab === 'home') items[0].classList.add('active'); // Index 0: Home
+             if(tab === 'history') { items[3].classList.add('active'); renderLocalStorageList('history'); } // Index 3: History
+             if(tab === 'bookmark') { items[4].classList.add('active'); renderLocalStorageList('bookmark'); } // Index 4: Bookmark
+             
+             window.scrollTo(0,0);
+         }
+      </script>
+   </body>
 </html>

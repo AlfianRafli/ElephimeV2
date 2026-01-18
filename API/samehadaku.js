@@ -157,12 +157,22 @@ const getAnime = async (url) => {
     info.image = getImage($(".thumb img")); 
     info.rating = cleanText($(".rtg .skor").text());
     info.synopsis = cleanText($(".desc").text() || $(".entry-content").text());
+    info.status = "Unknown"; // Default
 
+    // Logic baru untuk mengambil info detail (Status, dll)
     $(".spe span").each((_, el) => {
-      const text = $(el).text();
+      const text = $(el).text(); // Contoh: "Status: Ongoing"
+      
+      // Deteksi Key
+      if (text.toLowerCase().includes("status")) {
+         info.status = text.replace(/status/i, "").replace(":", "").trim();
+      }
+      
+      // Generic Key Value parsing
       const splitIndex = text.indexOf(":");
       if (splitIndex !== -1) {
-        const key = cleanText(text.substring(0, splitIndex)).toLowerCase().replace(/\s+/g, '_');
+        const keyRaw = cleanText(text.substring(0, splitIndex));
+        const key = keyRaw.toLowerCase().replace(/\s+/g, '_');
         const value = cleanText(text.substring(splitIndex + 1));
         if (key && value) {
            info[key] = value;
@@ -176,7 +186,7 @@ const getAnime = async (url) => {
     $(".lstepsiode ul li").each((_, el) => {
       const $el = $(el);
       episodes.push({
-        title: cleanText($el.find(".lchx a").text()),
+        title: cleanText($el.find(".lchx a").text()), 
         url: $el.find(".lchx a").attr("href"),
         date: cleanText($el.find(".date").text())
       });
@@ -281,11 +291,9 @@ const getSchedule = async () => {
     const $ = cheerio.load(body);
     const results = [];
 
-    // Daftar ID hari yang umum digunakan
     const days = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"];
 
     days.forEach(day => {
-        // Cari container berdasarkan ID (lebih akurat daripada class)
         const $dayContainer = $(`#${day}`);
         
         if ($dayContainer.length > 0) {
@@ -293,13 +301,13 @@ const getSchedule = async () => {
             
             $dayContainer.find(".items .item").each((_, item) => {
                 const $item = $(item);
-                const imgEl = $item.find(".thumb img"); // Gambar poster
+                const imgEl = $item.find(".thumb img");
 
                 animeList.push({
                     title: cleanText($item.find(".name").text()),
                     url: $item.find(".name").attr("href"),
                     time: cleanText($item.find(".time").text()),
-                    image: getImage(imgEl), // Placeholder jika kosong
+                    image: getImage(imgEl), 
                     genres: [] 
                 });
             });
@@ -313,7 +321,6 @@ const getSchedule = async () => {
         }
     });
     
-    console.log(`[Schedule] Found ${results.length} days of schedule.`);
     return results;
 
   } catch (error) {
