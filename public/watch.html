@@ -7,23 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <title>Nonton Anime - Elephime</title>
-    <meta name="title" content="Nonton Anime Sub Indo - Elephime">
-    <meta name="description" content="Streaming anime subtitle Indonesia server cepat. Nonton online gratis dengan kualitas HD dan fitur hemat kuota.">
-    <meta name="robots" content="noindex, nofollow"> <meta property="og:type" content="video.other">
-    <meta property="og:url" content="https://elephant.my.id/">
-    <meta property="og:title" content="Sedang Menonton - Elephime">
-    <meta property="og:description" content="Klik untuk mulai nonton anime ini sekarang. Server cepat, gratis, dan update setiap hari.">
-    <meta property="og:image" content="https://elephant.my.id/assets/favico.png">
-    <meta property="og:site_name" content="Elephime">
-
-    <meta property="twitter:card" content="player">
-    <meta property="twitter:title" content="Nonton Anime di Elephime">
-    <meta property="twitter:description" content="Streaming anime sub indo gratis.">
-    <meta property="twitter:image" content="https://elephant.my.id/assets/favico.png">
-
     <meta name="theme-color" content="#ff4757">
     <link rel="icon" type="image/png" href="/assets/favico.png">
-    <link rel="apple-touch-icon" href="/assets/favico.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,19 +28,24 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Outfit', sans-serif; background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; }
         
-        /* Navbar Minimalis */
         .navbar {
             height: var(--nav-height); padding: 0 5%;
             background: #000; border-bottom: 1px solid #333;
             display: flex; align-items: center; justify-content: space-between;
         }
         .logo { font-weight: 700; color: var(--primary); text-decoration: none; display: flex; gap:8px; align-items: center;}
-        .back-btn { color: #ccc; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap:5px; }
-        .back-btn:hover { color: white; }
+        
+        /* UPDATE: Back Button Style */
+        .back-btn { 
+            color: #ccc; text-decoration: none; font-size: 0.9rem; 
+            display: flex; align-items: center; gap:8px; 
+            padding: 8px 12px; border-radius: 8px;
+            transition: 0.2s;
+        }
+        .back-btn:hover { color: white; background: rgba(255,255,255,0.1); }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 20px 5%; }
 
-        /* Video Player Area */
         .player-wrapper {
             position: relative;
             padding-top: 56.25%; /* 16:9 Aspect Ratio */
@@ -72,7 +62,6 @@
             border: none;
         }
 
-        /* Controls Area */
         .controls-header {
             display: flex; justify-content: space-between; align-items: flex-start;
             flex-wrap: wrap; gap: 20px; margin-bottom: 30px;
@@ -81,7 +70,6 @@
         .episode-title { font-size: 1.3rem; margin-bottom: 5px; line-height: 1.4; }
         .anime-name { color: #a0a0a0; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
 
-        /* Navigasi Prev/Next */
         .nav-buttons { display: flex; gap: 10px; }
         .nav-btn {
             background: var(--bg-card); color: white; padding: 10px 20px;
@@ -94,7 +82,6 @@
         .nav-btn.primary { background: var(--primary); border-color: var(--primary); }
         .nav-btn.primary:hover { background: #e03a4b; }
 
-        /* Server List */
         .server-section {
             background: var(--bg-card); padding: 20px; border-radius: var(--radius-md);
             border: 1px solid var(--glass-border); margin-bottom: 30px;
@@ -109,7 +96,6 @@
         .server-btn:hover { background: rgba(255,255,255,0.1); color: white; }
         .server-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* Download Section */
         .download-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
         .dl-item {
             display: block; padding: 10px; background: #222; text-align: center;
@@ -119,7 +105,6 @@
         .dl-item:hover { border-color: var(--primary); color: var(--primary); }
         .dl-res { font-weight: bold; display: block; margin-bottom: 2px; color: white; }
 
-        /* Loader */
         #loader {
             position: absolute; inset: 0; background: #000; z-index: 10;
             display: flex; justify-content: center; align-items: center; color: var(--primary);
@@ -136,7 +121,10 @@
 
     <nav class="navbar">
         <a href="/" class="logo"><i class="fas fa-shapes"></i> Elephime</a>
-        <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> List Episode</a>
+        
+        <a href="/" id="back-to-list-btn" class="back-btn">
+            <i class="fas fa-arrow-left"></i> List Episode
+        </a>
     </nav>
 
     <div class="container">
@@ -169,17 +157,13 @@
         <div class="server-section">
             <div class="section-label"><i class="fas fa-download"></i> Link Download</div>
             <div class="download-list" id="download-list">
-                </div>
+            </div>
         </div>
 
     </div>
-
     <script>
-        // Ambil URL Parameter
         const urlParams = new URLSearchParams(window.location.search);
         const episodeUrl = urlParams.get('url');
-
-        // Global State
         let streamServers = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -189,33 +173,29 @@
                 return;
             }
             
-            // Load Context dari LocalStorage (Judul Anime & List Episode untuk Navigasi)
             loadContextInfo();
-            
-            // Fetch Stream Data
             fetchEpisodeData();
         });
 
-        // 1. Tampilkan Info Dasar dari Cache (biar gak blank saat loading)
         function loadContextInfo() {
             try {
                 const context = JSON.parse(localStorage.getItem('selectedEpisode'));
                 if (context) {
                     if(context.animeTitle) document.getElementById('anime-series-title').innerText = context.animeTitle;
                     
-                    // Logic Next/Prev Button berdasarkan list semua episode
+                    // Set href tombol back ke halaman anime
+                    if(context.animeUrl) {
+                        const backBtn = document.getElementById('back-to-list-btn');
+                        backBtn.href = `/anime?url=${encodeURIComponent(context.animeUrl)}`;
+                    }
+
+                    // Logic Next/Prev
                     if (context.allEpisodes && context.url) {
                         const currentIdx = context.allEpisodes.findIndex(ep => ep.url === episodeUrl);
                         
-                        // Prev Episode (index bertambah karena biasanya desc)
-                        // Cek urutan array, samehadaku biasanya desc (Ep 10, 9, 8...)
-                        // Jadi Prev adalah index + 1, Next adalah index - 1
-                        
-                        // Tapi kita perlu cek struktur arraynya.
-                        // Anggap urutan standar Samehadaku (Terbaru di atas/index 0)
-                        
-                        const nextEpData = context.allEpisodes[currentIdx - 1]; // Ep lebih baru (Next)
-                        const prevEpData = context.allEpisodes[currentIdx + 1]; // Ep lebih lama (Prev)
+                        // Cek urutan array (Samehadaku biasanya Descending)
+                        const nextEpData = context.allEpisodes[currentIdx - 1]; 
+                        const prevEpData = context.allEpisodes[currentIdx + 1];
 
                         setupNavBtn('next-btn', nextEpData, context);
                         setupNavBtn('prev-btn', prevEpData, context);
@@ -234,10 +214,16 @@
                 
                 btn.onclick = (e) => {
                     e.preventDefault();
-                    // Update context url
+                    
+                    // 1. SIMPAN HISTORY & WATCHED STATUS SEBELUM PINDAH
+                    saveLocalHistory(targetEp, context);
+
+                    // 2. Update context url saat pindah episode
                     context.url = targetEp.url;
                     context.title = targetEp.title;
                     localStorage.setItem('selectedEpisode', JSON.stringify(context));
+                    
+                    // 3. Pindah Halaman
                     window.location.href = `/watch?url=${encodeURIComponent(targetEp.url)}`;
                 };
             } else {
@@ -245,7 +231,36 @@
             }
         }
 
-        // 2. Fetch Data Streaming dari Server
+        // --- FUNGSI BARU UNTUK SAVE HISTORY DI PLAYER ---
+        function saveLocalHistory(targetEp, context) {
+            // A. Update Centang "Sudah Ditonton" (WatchedEpisodes)
+            let watched = JSON.parse(localStorage.getItem('watchedEpisodes')) || [];
+            if (!watched.includes(targetEp.url)) {
+                watched.push(targetEp.url);
+                localStorage.setItem('watchedEpisodes', JSON.stringify(watched));
+            }
+
+            // B. Update Riwayat di Halaman Depan (History)
+            if(context.animeTitle && context.animeUrl) {
+                 let history = JSON.parse(localStorage.getItem('history')) || [];
+                 // Hapus entry lama anime ini biar naik ke atas
+                 history = history.filter(h => h.url !== context.animeUrl);
+                 
+                 // Bersihkan judul episode
+                 let cleanEp = targetEp.title.replace(context.animeTitle, '').replace('Episode', '').trim();
+
+                 history.unshift({
+                     title: context.animeTitle,
+                     image: context.animeImage, // Menggunakan gambar yang dikirim dari anime.html
+                     url: context.animeUrl,
+                     watchUrl: `/watch?url=${encodeURIComponent(targetEp.url)}`,
+                     episode: cleanEp,
+                     timestamp: Date.now()
+                 });
+                 localStorage.setItem('history', JSON.stringify(history.slice(0, 50)));
+            }
+        }
+
         async function fetchEpisodeData() {
             try {
                 const res = await fetch(`/API/episode?url=${encodeURIComponent(episodeUrl)}`);
@@ -256,14 +271,10 @@
                     document.getElementById('ep-title').innerText = data.title;
                     document.title = `Nonton ${data.title}`;
                     
-                    // Render Servers
                     streamServers = data.stream_servers;
                     renderServers(streamServers);
-                    
-                    // Render Downloads
                     renderDownloads(data.downloads);
 
-                    // Play Default Server (Index 0)
                     if (streamServers.length > 0) {
                         playVideo(0);
                     } else {
@@ -285,7 +296,7 @@
             servers.forEach((srv, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'server-btn';
-                btn.innerText = srv.server; // Nama server
+                btn.innerText = srv.server;
                 btn.onclick = () => playVideo(index);
                 container.appendChild(btn);
             });
@@ -296,27 +307,20 @@
             const iframe = document.getElementById('video-frame');
             const btns = document.querySelectorAll('.server-btn');
 
-            // Update UI Active
             btns.forEach((b, i) => {
                 if(i === index) b.classList.add('active');
                 else b.classList.remove('active');
             });
 
-            // Show Loader
             loader.style.display = 'flex';
             
-            // Set Source
             const server = streamServers[index];
             if (server && server.iframe) {
                 iframe.src = server.iframe;
-                
-                iframe.onload = () => {
-                    loader.style.display = 'none';
-                };
-                // Fallback timeout jika onload macet
+                iframe.onload = () => { loader.style.display = 'none'; };
                 setTimeout(() => { loader.style.display = 'none'; }, 2000);
             } else {
-                alert("Link server ini rusak, coba server lain.");
+                alert("Link server ini rusak/kosong.");
                 loader.style.display = 'none';
             }
         }

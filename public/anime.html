@@ -260,7 +260,7 @@
              document.title = `${data.title} - Elephime`;
          }
          
-         function renderEpisodes(episodes) {
+	 function renderEpisodes(episodes) {
              const container = document.getElementById('ep-list');
              const watchedList = JSON.parse(localStorage.getItem('watchedEpisodes')) || [];
          
@@ -271,8 +271,6 @@
                  return;
              }
          
-             // Reverse agar Episode terbaru (biasanya paling atas di array) tetap di atas, 
-             // atau sesuaikan selera. Samehadaku biasanya urut descending.
              episodes.forEach((ep, index) => {
                  const btn = document.createElement('div');
                  const isWatched = watchedList.includes(ep.url);
@@ -284,12 +282,14 @@
                      // Simpan history tontonan (URL episode)
                      saveWatched(ep.url, ep.title);
                      
-                     // Simpan data episode terpilih untuk halaman watch
+                     // UPDATE: Tambahkan 'animeImage' ke context agar bisa dipakai di watch.html
                      localStorage.setItem('selectedEpisode', JSON.stringify({
                          title: ep.title,
                          url: ep.url,
                          animeTitle: animeData.title,
-                         allEpisodes: episodes // Kirim list semua episode agar bisa Next/Prev di watch
+                         animeUrl: animeUrl,
+                         animeImage: animeData.image, // <--- TAMBAHAN PENTING
+                         allEpisodes: episodes 
                      }));
                      
                      window.location.href = `/watch?url=${encodeURIComponent(ep.url)}`;

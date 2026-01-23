@@ -1,14 +1,29 @@
 {
-  "name": "elephimev2",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "elephime-v2",
+  "version": "1.1.0",
+  "description": "High-performance Anime Streaming API & Frontend built with Express.js. Supports Samehadaku & Otakudesu scraping with caching and rate limiting.",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "anime",
+    "streaming",
+    "scraper",
+    "api",
+    "express",
+    "samehadaku",
+    "otakudesu",
+    "elephime"
+  ],
+  "author": "Raply",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlfianRafli/"
+  },
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "cheerio": "^1.1.2",
     "compression": "^1.8.1",

@@ -544,20 +544,46 @@
          container.appendChild(card);
          });
          }
-         
+
          function removeItem(e, type, url) {
              e.stopPropagation();
              if(!confirm('Hapus item ini?')) return;
-             const key = type==='history'?'history':'bookmarks';
-             let list = JSON.parse(localStorage.getItem(key))||[];
+             
+             const key = type === 'history' ? 'history' : 'bookmarks';
+             let list = JSON.parse(localStorage.getItem(key)) || [];
+             
+             // 1. Hapus dari list tampilan (History/Bookmark UI)
              list = list.filter(i => i.url !== url);
              localStorage.setItem(key, JSON.stringify(list));
+             
+             // --- FIX BUG CENTANG (Hanya jalan jika menghapus History) ---
+             if (type === 'history') {
+                 let watched = JSON.parse(localStorage.getItem('watchedEpisodes')) || [];
+                 
+                 // Logika: Kita ambil "slug" (judul unik) dari URL Anime
+                 // Contoh URL: .../anime/naruto-shippuden/ -> Slug: "naruto-shippuden"
+                 // Kita hapus semua episode di 'watchedEpisodes' yang mengandung kata "naruto-shippuden"
+                 
+                 let cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
+                 let slug = cleanUrl.split('/').pop(); 
+                 
+                 if (slug && slug.length > 2) { // Pastikan slug valid
+                     // Filter: Simpan episode yang TIDAK mengandung slug anime yang dihapus
+                     watched = watched.filter(epUrl => !epUrl.includes(slug));
+                     localStorage.setItem('watchedEpisodes', JSON.stringify(watched));
+                 }
+             }
+             
              renderLocalStorageList(type);
          }
          
          function clearHistory() {
              if(confirm('Hapus semua history?')) {
                  localStorage.removeItem('history');
+                 
+                 // FIX: Hapus juga semua data centang episode saat Clear All
+                 localStorage.removeItem('watchedEpisodes'); 
+                 
                  renderLocalStorageList('history');
              }
          }
