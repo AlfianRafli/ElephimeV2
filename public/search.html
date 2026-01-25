@@ -18,7 +18,7 @@
             --radius-md: 16px;
             --nav-height: 70px;
         }
-
+	html { scroll-behavior: smooth; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Outfit', sans-serif; background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding-bottom: 80px; }
         a { text-decoration: none; color: inherit; }
@@ -389,7 +389,9 @@
             if(el) el.checked = true;
         }
 
-        function triggerSearch() {
+        async function triggerSearch() {
+	    const btn = document.querySelector('.search-trigger-btn');
+	    const originalContent = btn.innerHTML;
             const query = document.getElementById('searchInput').value.trim();
             const checkedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(cb => cb.value);
 
@@ -397,6 +399,9 @@
             if (!query && checkedGenres.length === 0) {
                 return;
             }
+	    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+	    btn.disabled = true; // Cegah klik dobel
+	    btn.style.opacity = '0.7';
 
             const url = new URL(window.location.href);
             url.searchParams.set('source', currentSource);
@@ -415,13 +420,16 @@
             checkedGenres.forEach(g => url.searchParams.append('genre[]', g));
 
             window.history.pushState({}, '', url);
-            performSearch();
+            await performSearch();
             
             // Tutup filter di mobile setelah search
             if(window.innerWidth < 768) {
                 document.getElementById('filterPanel').classList.remove('open');
                 document.getElementById('filterBtn').classList.remove('filter-active');
             }
+           btn.innerHTML = originalContent;
+           btn.disabled = false;
+           btn.style.opacity = '1';
         }
 
         async function performSearch() {
@@ -485,7 +493,7 @@
                 card.className = 'card';
                 card.innerHTML = `
                     <div class="card-img-wrapper">
-                        <img src="${imgUrl}" class="card-img" loading="lazy">
+                        <img src="/API/proxy-image?url=${encodeURIComponent(anime.image)}" class="card-img" loading="lazy" onerror="this.onerror=null; this.src='/assets/placeholder.png';">
                         <div class="score-badge"><i class="fas fa-star"></i> ${anime.rating || '?'}</div>
                     </div>
                     <div class="card-info">

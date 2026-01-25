@@ -24,7 +24,7 @@
             --radius-md: 12px;
             --nav-height: 60px;
         }
-
+	html { scroll-behavior: smooth; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Outfit', sans-serif; background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; }
         
@@ -109,6 +109,19 @@
             position: absolute; inset: 0; background: #000; z-index: 10;
             display: flex; justify-content: center; align-items: center; color: var(--primary);
         }
+	/* TOAST NOTIFICATION */
+         .toast-container {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+            pointer-events: none;                                                                        }
+         .toast {
+            background: rgba(20, 20, 20, 0.95); color: white; padding: 12px 24px;
+            border-radius: 50px; font-size: 0.9rem; border: 1px solid var(--primary);                       box-shadow: 0 5px 15px rgba(0,0,0,0.5); opacity: 0; transform: translateY(20px);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 10px;
+         }
+         .toast.show { opacity: 1; transform: translateY(0); }
+         .toast i { color: var(--primary); }
 
         @media (max-width: 768px) {
             .controls-header { flex-direction: column; }
@@ -356,6 +369,27 @@
 
         function showError(msg) {
             document.getElementById('loader').innerHTML = `<div style="text-align:center"><i class="fas fa-exclamation-triangle"></i><br>${msg}</div>`;
+        }
+	// --- TOAST HELPER ---
+        function showToast(message, icon = 'check-circle') {
+            // Buat container jika belum ada                                                                let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+
+            // Animasi Masuk                                                                                setTimeout(() => toast.classList.add('show'), 10);
+                                                                                                            // Hapus setelah 3 detik
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
     </script>
 </body>
