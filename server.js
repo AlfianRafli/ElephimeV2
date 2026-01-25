@@ -104,14 +104,23 @@ app.get("/watch", (req, res) => {
 // 4. API ENDPOINTS
 // ==========================================
 
-// --- A. Home Data (Default: Samehadaku) ---
+// --- A. Home Data (Resilient) ---
 app.get("/API/home", cacheMiddleware, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const [latest, topTen] = await Promise.all([
+        
+        // Gunakan allSettled agar halaman tidak crash total jika satu sumber error
+        const results = await Promise.allSettled([
             samehadaku.getAnimeList(page),
-            page === 1 ? samehadaku.getTopTenWeek() : Promise.resolve([]) 
+            page === 1 ? samehadaku.getTopTenWeek() : Promise.resolve([])
         ]);
+
+        // Ambil data jika status 'fulfilled', jika gagal kasih array kosong []
+        const latest = results[0].status === 'fulfilled' ? results[0].value : [];
+        const topTen = results[1].status === 'fulfilled' ? results[1].value : [];
+
+        // Opsional: Log error jika ada yang failed
+        if (results[0].status === 'rejected') console.error("Home Latest Error:", results[0].reason);
 
         res.json({
             status: true,
@@ -268,6 +277,13 @@ app.get("/API/episode", cacheMiddleware, async (req, res) => {
 app.get("/API/proxy-image", async (req, res) => {
     const imageUrl = req.query.url;
     if (!imageUrl) return res.status(400).send("URL required");
+
+    const allowedDomains = ["otakudesu", "samehadaku", "wp.com", "blogspot", "googleusercontent"];
+    const isAllowed = allowedDomains.some(domain => imageUrl.includes(domain));
+
+    if (!isAllowed) {
+        return res.status(403).send("Forbidden: Domain not allowed.");
+    }
 
     try {
         const { gotScraping } = await import("got-scraping");
