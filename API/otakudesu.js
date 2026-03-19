@@ -1,5 +1,5 @@
 const cheerio = require("cheerio");
-const baseUrl = "https://otakudesu.best";
+const baseUrl = "https://otakudesu.blog";
 
 // =====================================================================
 // 1. CONFIGURATION & CLIENT
